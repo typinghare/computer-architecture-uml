@@ -1,0 +1,11 @@
+This program will emulate the addition of two IEEE 754 floating point numbers
+Please enter two positive floating point values each with:
+- no more than 6 significant digits
+- a value between + 10**37 and 10**-37
+Enter Float 1: 7.491
+Enter Float 2: 4.617e20
+Original pattern of Float 1:  0 1000 0001 110 1111 1011 0110 0100 0110
+Original pattern of Float 2:  0 1100 0011 100 1000 0011 1010 1111 1111
+Bit pattern of result:        0 1100 0011 100 1000 0011 1010 1111 1111
+EMULATED FLOATING RESULT FROM PRINTF ==>>> 4.617e+20
+HARDWARE FLOATING RESULT FROM PRINTF ==>>> 4.617e+20

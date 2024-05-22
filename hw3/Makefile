@@ -1,0 +1,12 @@
+ASM_FILE = rfib.asm
+OBJ_FILE = rfib.obj
+STARTING_ADDRESS = 0
+STARTING_STACK_POINTER = 2048
+
+$(OBJ_FILE):
+	./masm < $(ASM_FILE) > $(OBJ_FILE)
+
+all: $(OBJ_FILE)
+
+run: $(OBJ_FILE)
+	./mic1 prom.dat $(OBJ_FILE) $(STARTING_ADDRESS) $(STARTING_STACK_POINTER)

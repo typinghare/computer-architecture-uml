@@ -57,10 +57,8 @@ int main() {
         ++exp_res;
         mant_res >>= 1;
     }
-    // Extract to rightmost 23 bits as the final mantissa
-    mant_res &= 0x7FFFFF;
 
-    // Particularly, if the exponent is 0xFF (1111 1111), the result if overflow
+    // Particularly, if the exponent is 0xFF (1111 1111), the result is overflow
     // Make the mantissa all 0's to represent "infinity"
     if (exp_res == 0xFF) mant_res = 0;
 
@@ -77,7 +75,7 @@ int main() {
     print_bits(float_32_rslt, bold("Bit pattern of result:      "));
     printf("%s%g\n", bold("EMULATED FLOATING RESULT FROM PRINTF ==>>> "),
            float_32_rslt.floating_value_in_32_bits);
-    printf("%s%g", bold("HARDWARE FLOATING RESULT FROM PRINTF ==>>> "), the_hardware_result);
+    printf("%s%g\n", bold("HARDWARE FLOATING RESULT FROM PRINTF ==>>> "), the_hardware_result);
 
     return 0;
 }

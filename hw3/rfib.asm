@@ -17,10 +17,10 @@ P2:         PUSH            ; Put the return value in the accumulator to the sta
 FIB:        LODD memoaddr:  ; Load the address of the memo array
             ADDL 1          ; Caculate the address of memo[n]
             PSHI            ; Push memo[n] to the stack
-            JNEG FIB_CALC:  ; If memo[n] == -1, the value has yet been calculated
+            JNEG FIBCALC:   ; If memo[n] == -1, the value has yet been calculated
             POP             ; Pop the value, fib(n), to the accumulator
             RETN            ; Return
-FIB_CALC:   LODL 1          ; Load the argument n to the accumulator
+FIBCALC:    LODL 1          ; Load the argument n to the accumulator
             SUBD c1:        ; Decrement the value in the accumulator by 1
             PUSH            ; Push (n - 1) to the stack
             CALL FIB:       ; Call the fib function (recursion) to calculate fib(n - 1)
@@ -48,9 +48,9 @@ c0: 	    0			    ; [100] 0 (constant)
 c1: 	    1               ; [101] 1 (constant)
 d0:  	    3			    ; [102] Array of args for the fib function
      	    9               ; [103]
-     	    0               ; [104]
-     	    0               ; [105]
-     	    0               ; [106]
+     	    18              ; [104]
+     	    23              ; [105]
+     	    25              ; [106]
 f0:  	    0			    ; [107] Array of result locations for fib results
      	    0               ; [108]
      	    0               ; [109]

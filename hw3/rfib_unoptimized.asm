@@ -38,9 +38,9 @@ c0: 	    0			    ; [100] 0 (constant)
 c1: 	    1               ; [101] 1 (constant)
 d0:  	    3			    ; [102] Array of args for the fib function
      	    9               ; [103]
-     	    0               ; [104]
-     	    0               ; [105]
-     	    0               ; [106]
+     	    18              ; [104]
+     	    23              ; [105]
+     	    25              ; [106]
 f0:  	    0			    ; [107] Array of result locations for fib results
      	    0               ; [108]
      	    0               ; [109]
@@ -48,4 +48,4 @@ f0:  	    0			    ; [107] Array of result locations for fib results
      	    0               ; [111]
 daddr:      d0:			    ; [112] Start address of fib args
 faddr:      f0:			    ; [113] Start address of fib results
-count:      1			    ; [114] The number of the remaining data elements to process
+count:      5			    ; [114] The number of the remaining data elements to process

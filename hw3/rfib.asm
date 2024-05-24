@@ -37,10 +37,6 @@ DONE:	    HALT            ; Halt
 c0: 	    0			    ; 0 (constant)
 c1: 	    1               ; 1 (constant)
 d0:  	    3			    ; Array of args for the fib function
-     	    9
-     	    18
-     	    23
-     	    25
 f0:  	    0			    ; Array of result locations for fib results
      	    0
      	    0
@@ -48,4 +44,4 @@ f0:  	    0			    ; Array of result locations for fib results
      	    0
 daddr:      d0:			    ; Start address of fib args
 faddr:      f0:			    ; Start address of fib results
-count:      5			    ; The number of the remaining data elements to process
+count:      1			    ; The number of the remaining data elements to process

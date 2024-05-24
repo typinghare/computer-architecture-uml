@@ -1,8 +1,6 @@
 #include <stdio.h>
 
-int rfib(int arg);
-
-int func_call_time = 0;
+int ifib(int arg);
 
 int main(void) {
     int results[5], i;
@@ -11,7 +9,7 @@ int main(void) {
 
     for (i = 0; i < ndata; ++i) {
         printf("\ncalling fib with %d\n", data[i]);
-        results[i] = rfib(data[i]);
+        results[i] = ifib(data[i]);
         printf(" called fib with %d, result is %d\n", data[i], results[i]);
     }
 
@@ -20,18 +18,21 @@ int main(void) {
         printf("   FIB of %d\t is %d\n", data[i], results[i]);
     }
 
-    printf("Function call time: %d", func_call_time);
-
     return 0;
 }
 
-int rfib(const int arg) {
-    func_call_time++;
+int ifib(const int arg) {
     if (arg == 0) return 0;
     if (arg == 1) return 1;
 
-    const int fn1 = rfib(arg - 1);
-    const int fn2 = rfib(arg - 2);
+    int fm1 = 1;
+    int fm2 = 0;
+    int tmp = 0;
+    for (int lpcnt = arg - 1; lpcnt > 0; --lpcnt) {
+        tmp = fm1 + fm2;
+        fm2 = fm1;
+        fm1 = tmp;
+    }
 
-    return fn1 + fn2;
+    return tmp;
 }

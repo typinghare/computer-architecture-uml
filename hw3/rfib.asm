@@ -16,8 +16,8 @@ P2:         PUSH            ; Put the return value in the accumulator to the sta
             JUMP LOOP:      ; Go back to the beginning of the loop
 FIB:        LODL 1          ; Load the argument n to the accumulator
             JZER FIBZER:    ; If n == 0 goto FIBZER
-            SUBD c1         ; Decrement the value in the accumulator by 1
-            JZER FIBONE:    ; If n == 0 goto FIBONE
+            SUBD c1:        ; Decrement the value in the accumulator by 1
+            JZER FIBONE:    ; If (n - 1) == 0 goto FIBONE
             PUSH            ; Push (n - 1) to the stack
             CALL FIB:       ; Call the fib function (recursion) to calculate fib(n - 1)
             PUSH            ; Push the return value, fib(n - 1), to the stack
@@ -25,7 +25,7 @@ FIB:        LODL 1          ; Load the argument n to the accumulator
             SUBD c1:        ; ac = n - 2
             PUSH            ; Push (n - 2) to the stack
             CALL FIB:       ; Call the fib function (recurssion) to calculate fib(n - 2)
-            ADDL 2          ; ac += fib(n - 1), where ac = fib(n - 2)
+            ADDL 1          ; ac += fib(n - 1), where ac = fib(n - 2)
             INSP 3          ; Clear the stack
             RETN            ; Return
 FIBZER:     LODD c0:        ; Load 0 to the accumulator; f(0) = 0

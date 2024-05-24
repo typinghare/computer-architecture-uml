@@ -7,7 +7,7 @@ P1:         LODD daddr:     ; Load the pointer of a fib argument d[n]
             ADDD c1:        ; [Assignment] ac += 1
             STOD daddr:     ; [Assignment] daddr += 1
             CALL FIB:       ; Call the fib function
-            INSP 1:         ; Clear the stack
+            INSP 1          ; Clear the stack
 P2:         PUSH            ; Put the return value in the accumulator to the stack
             LODD faddr:     ; Load the pointer of f[n]
             POPI            ; Pop the result to f[n]

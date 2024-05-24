@@ -2,6 +2,8 @@
 
 int rfib(int arg);
 
+int func_call_time = 0;
+
 int main(void) {
     int results[5], i;
     const int data[] = {3, 9, 18, 23, 25};
@@ -18,13 +20,18 @@ int main(void) {
         printf("   FIB of %d\t is %d\n", data[i], results[i]);
     }
 
+    printf("Function call time: %d", func_call_time);
+
     return 0;
 }
 
 int rfib(const int arg) {
+    func_call_time++;
     if (arg == 0) return 0;
     if (arg == 1) return 1;
+
     const int fn1 = rfib(arg - 1);
     const int fn2 = rfib(arg - 2);
+
     return fn1 + fn2;
 }

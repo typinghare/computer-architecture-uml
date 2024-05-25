@@ -18,7 +18,9 @@ FIB:        LODD memoaddr:  ; Load the address of the memo array
             ADDL 1          ; Caculate the address of memo[n]
             PSHI            ; Push memo[n] to the stack
             POP             ; Pop memo[n] to the accumulator
-            JNEG FIBCALC:   ; If memo[n] == -1, the value has yet been calculated
+            ADDD c1         ; Increment the value in the accumulator by 1
+            JZER FIBCALC:   ; If memo[n] == -1, the value has yet been calculated
+            SUBD c1         ; Decrement the value in the accumulator by 1
             RETN            ; Return
 FIBCALC:    LODL 1          ; Load the argument n to the accumulator
             SUBD c1:        ; Decrement the value in the accumulator by 1

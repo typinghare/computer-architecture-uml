@@ -3,11 +3,8 @@
 int rfib(int arg);
 
 int fib_invocation_count = 0;
-int memo[26] = {0, 1};
 
 int main(void) {
-    for (int i = 2; i < 26; ++i) memo[i] = -1;
-
     int results[5], i;
     const int data[] = {3, 9, 18, 23, 25};
     const int ndata = 5;
@@ -31,13 +28,11 @@ int main(void) {
 int rfib(const int arg) {
     fib_invocation_count++;
 
-    if (memo[arg] >= 0) {
-        return memo[arg];
-    }
+    if (arg == 0) return 0;
+    if (arg == 1) return 1;
 
     const int fn1 = rfib(arg - 1);
     const int fn2 = rfib(arg - 2);
-    memo[arg] = fn1 + fn2;
 
-    return memo[arg];
+    return fn1 + fn2;
 }

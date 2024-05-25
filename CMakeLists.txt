@@ -12,4 +12,5 @@ add_executable(hw2
 
 # Homework 3
 add_executable(hw3-ifib hw3/ifib.c)
+add_executable(hw3-rfib-unoptimized hw3/rfib_unoptimized.c)
 add_executable(hw3-rfib hw3/rfib.c)

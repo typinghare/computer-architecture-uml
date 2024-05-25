@@ -9,7 +9,7 @@ C_OBJECTS = rfib.o
 C_PROGRAM = rfib_c
 
 $(ASM_OBJECTS): $(ASM_FILE)
-	$(M_ASSEMBLER) < $(ASM_FILE) > $(ASM_OBJECTS)
+	$(M_ASSEMBLER) < $^ > $(ASM_OBJECTS)
 
 %.o: %.c
 	$(C_COMPILER) -c $<
@@ -17,7 +17,7 @@ $(ASM_OBJECTS): $(ASM_FILE)
 all: $(ASM_OBJECTS)
 
 run: $(ASM_OBJECTS)
-	$(MIC1) prom.dat $(ASM_OBJECTS) $(STARTING_ADDRESS) $(STARTING_STACK_POINTER)
+	$(MIC1) prom.dat $^ $(STARTING_ADDRESS) $(STARTING_STACK_POINTER)
 
 $(C_PROGRAM): $(C_OBJECTS)
 	$(C_COMPILER) -o $@ $^
@@ -28,5 +28,9 @@ run-c: $(C_PROGRAM)
 clean-c:
 	rm -f *.o $(C_PROGRAM)
 
-clean:
+clean: clean-c
 	rm -f $(ASM_OBJECTS)
+
+run-unoptimized: rfib_unoptimized.asm
+	$(M_ASSEMBLER) < $^ > rfib_unoptimized.obj
+	$(MIC1) prom.dat rfib_unoptimized.obj $(STARTING_ADDRESS) $(STARTING_STACK_POINTER)

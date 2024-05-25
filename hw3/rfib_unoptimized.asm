@@ -29,23 +29,23 @@ FIB:        LODL 1          ; Load the argument n to the accumulator
             INSP 3          ; Clear the stack
             RETN            ; Return
 FIBZER:     LODD c0:        ; Load 0 to the accumulator => fib(0) = 0
-	        RETN			; Return
-FIBONE:	    LODD c1:        ; Load 1 to the accumulator => fib(1) = 1
-	        RETN			; Return
-DONE:	    HALT            ; Halt
-.LOC 	    100			    ; Locate data beginning at 100
-c0: 	    0			    ; [100] 0 (constant)
-c1: 	    1               ; [101] 1 (constant)
-d0:  	    3			    ; [102] Array of args for the fib function
-     	    9               ; [103]
-     	    18              ; [104]
-     	    23              ; [105]
-     	    25              ; [106]
-f0:  	    0			    ; [107] Array of result locations for fib results
-     	    0               ; [108]
-     	    0               ; [109]
-     	    0               ; [110]
-     	    0               ; [111]
-daddr:      d0:			    ; [112] Start address of fib args
-faddr:      f0:			    ; [113] Start address of fib results
-count:      5			    ; [114] The number of the remaining data elements to process
+            RETN            ; Return
+FIBONE:     LODD c1:        ; Load 1 to the accumulator => fib(1) = 1
+            RETN            ; Return
+DONE:       HALT            ; Halt
+.LOC        100             ; Locate data beginning at 100
+c0:         0               ; [100] 0 (constant)
+c1:         1               ; [101] 1 (constant)
+d0:         3               ; [102] Array of args for the fib function
+            9               ; [103]
+            18              ; [104]
+            23              ; [105]
+            25              ; [106]
+f0:         0               ; [107] Array of result locations for fib results
+            0               ; [108]
+            0               ; [109]
+            0               ; [110]
+            0               ; [111]
+daddr:      d0:             ; [112] Start address of fib args
+faddr:      f0:             ; [113] Start address of fib results
+count:      5               ; [114] The number of the remaining data elements to process

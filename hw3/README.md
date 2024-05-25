@@ -17,6 +17,8 @@ The unoptimized version modifies some instructions within the `FIB` function in 
 
 Based on it, the optimized version creates an array named `memo` to store the results of fibonacci from 0 to 25. The `memo` array is initialized with all `-1`, except for `memo[0] = 0` and `memo[1] = 1`. The `FIB` function is also adjusted: if `memo[n]` is not `-1`, return `memo[n]` directly; otherwise, calculate the fibonacci value for `n`, and store it to `memo[n]` before returning.
 
+The optimization results in a significant improvement. The unoptimized version takes 33,217,509 cycles, whereas the optimized version takes only 8,596 cycles.
+
 ~~~bash
 make                  # Build the rfib.obj file
 make run              # Build and run the optimized version

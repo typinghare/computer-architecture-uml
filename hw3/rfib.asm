@@ -44,8 +44,6 @@ FIBONE:     LODD c1:        ; Load 1 to the accumulator => fib(1) = 1
             RETN            ; Return
 DONE:       HALT            ; Halt
 .LOC        100             ; Locate data beginning at 100
-c0:         0               ; [100] 0 (constant)
-c1:         1               ; [101] 1 (constant)
 d0:         3               ; [102] Array of args for the fib function
             9               ; [103]
             18              ; [104]
@@ -56,6 +54,8 @@ f0:         0               ; [107] Array of result locations for fib results
             0               ; [109]
             0               ; [110]
             0               ; [111]
+c0:         0               ; [100] 0 (constant)
+c1:         1               ; [101] 1 (constant)
 daddr:      d0:             ; [112] Start address of fib args
 faddr:      f0:             ; [113] Start address of fib results
 count:      5               ; [114] The number of the remaining data elements to process

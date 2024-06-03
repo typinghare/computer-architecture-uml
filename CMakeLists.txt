@@ -14,3 +14,6 @@ add_executable(hw2
 add_executable(hw3-ifib hw3/ifib.c)
 add_executable(hw3-rfib-unoptimized hw3/rfib_unoptimized.c)
 add_executable(hw3-rfib hw3/rfib.c)
+
+# Homework 4
+add_executable(hw4-macro-rshift hw4/nand_rshift/nand_rshift.c)

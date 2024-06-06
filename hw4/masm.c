@@ -470,6 +470,122 @@ int main(const int argc, char *argv[]) {
     return 0;
 }
 
+// dump symbol table for -s masm command line option
+void dump_table(void) {
+    FILE *fd;
+    struct nament *list;
+    fd = popen("sort +0 -1 -f", "w");
+    printf("***********************************************\n");
+    for (list = symbol_table; list != (struct nament *) 0; list = list->next) {
+        fprintf(fd, "%-25s %4d\n", list->name, list->addr);
+    }
+    fclose(fd);
+    wait(NULL);
+    printf("***********************************************\n");
+}
+
+// return symbol value to complete an instruction
+int get_sym_val(char *symbol) {
+    int i, j;
+    struct nament *element, *list;
+
+    for (list = symbol_table; list != (struct nament *) 0; list = list->next) {
+        if (strcmp(list->name, symbol) == 0) {
+            return (list->addr);
+        }
+    }
+    return (-1);
+}
+
+// rewind the temporary file and complete each unresolved
+// instruction ... send binary to stdout
+
+void generate_code(int linum) {
+    char linbuf[10];
+    char instruction[18];
+    int line_number;
+    int pc, mask, sym_val, i, j, old_pc, diff;
+    char symbol[26];
+
+    line_number = old_pc = 0;
+    rewind(p1);
+
+    sprintf(linbuf, "%5d:  ", line_number);
+
+    while (fscanf(p1, "%d %s", &pc, instruction) != EOF) {
+        if ((diff = pc - old_pc) > 1) {
+            for (j = 1; j < diff; j++) {
+                sprintf(linbuf, "%5d:  ", line_number++);
+                printf("%s1111111111111111\n", (linum ? linbuf : "\0"));
+            }
+        }
+        sprintf(linbuf, "%5d:  ", line_number++);
+        old_pc = pc;
+
+        if (instruction[0] == 'U') {
+            fscanf(p1, "%s", symbol);
+            if ((sym_val = get_sym_val(symbol)) == -1) {
+                fprintf(stderr, "no symbol in symbol table: %s\n", symbol);
+                exit(27);
+            }
+
+            for (i = 0; i < 12; i++) {
+                cstr_12[i] = '0';
+            }
+            cstr_12[12] = '\0';
+
+            mask = 2048;
+            for (i = 0; i < 12; i++) {
+                if (sym_val & mask)
+                    cstr_12[i] = '1';
+                mask >>= 1;
+            }
+            for (i = 0; i < 12; i++) {
+                instruction[i + 5] = cstr_12[i];
+            }
+            printf("%s%s\n", (linum ? linbuf : "\0"), &instruction[1]);
+        } else
+            printf("%s%s\n", (linum ? linbuf : "\0"), instruction);
+    }
+    fclose(p1);
+}
+
+
+// enter the value of a symbol into the symbol table
+// entry for that symbol when the value is discovered
+
+void update_sym_table(char *symbol) {
+    int i, j;
+    struct nament *element, *list;
+
+    for (list = symbol_table; list; list = list->next) {
+        if ((strcmp(list->name, symbol)) == 0) {
+            list->addr = pc;
+            return;
+        }
+    }
+    fprintf(stderr, "error from symbol table on line %d\n", pc);
+    exit(27);
+}
+
+// search the symbol table for a symbol
+// if found just return, if not, add the
+// symbol into the table at the head of the
+// symbol table linked list
+
+void search_sym_table(char *symbol) {
+    int i, j;
+    struct nament *element, *list;
+
+    for (list = symbol_table; list; list = list->next) {
+        if (strcmp(list->name, symbol) == 0)return;
+    }
+    element = malloc(sizeof(struct nament));
+    strcpy(element->name, symbol);
+    element->next = symbol_table;
+    symbol_table = element;
+}
+
 void str_6(const char *cstr) {
     unsigned short str_val;
     int i, mask;

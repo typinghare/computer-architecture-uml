@@ -1,4 +1,6 @@
-// Copyright 2024 James Chen
+// assembly parser for mic1 assembly code that
+// has been extended to include the RSHIFT and
+// NAND 10 bit opcodes (HALT also moved to 10 bit)
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -7,9 +9,10 @@
 #include <sys/types.h>
 #include <sys/wait.h>
 
-/**
- * Marco instructions. Three macro instructions are added: RSHIFT, MULT, and DIV.
- */
+// same defines as in the flex scanner file
+// should put these in an include file and
+// include them in both flex file and here
+
 #define         LODD       1
 #define         STOD       2
 #define         ADDD       3
@@ -39,36 +42,25 @@
 #define         LABEL     27
 #define         LOC       28
 #define         STR       29
-#define         NAND	  30
-#define         RSHIFT	  31
-#define         MULT      32
-#define         DIV       33
+#define         MULT      30
+#define		    RSHIFT	  31
+#define         DIV       32
 
-/**
- * @brief Name node.
- */
-struct nament {
-    char name[26];
-    int addr;
-    struct nament *next;
-};
+// global strings used with the similarly named
+// functions below (i.e. cstr_6 is set by str_6()
+// such that str_6("27") would load the cstr_6
+// array with the string "011011").  These are
+// global so they can be used by several functions
 
-// The head of the symbol table
-struct nament *symbol_table = NULL;
-
-/**
- * Global variables.
- */
 char cstr_6[7];
 char cstr_8[9];
 char cstr_12[13];
 char cstr_16[17];
 char binstr_16[17];
-int label_pc = -1;
-unsigned short pc = 0;
-FILE *p1;
 
-void str_6(const char *);
+int label_pc = -1;
+
+void str_6(char *);
 
 void str_8(char *);
 
@@ -86,30 +78,39 @@ void search_sym_table(char *);
 
 void dump_table(void);
 
+unsigned short pc = 0;
+FILE *p1;
+
+struct nament {
+    char name[26];
+    int addr;
+    struct nament *next;
+};
+
+// head of our symbol table
+struct nament *symtab = NULL;
+
 // imported from the lex.yy.c code
 extern int yylex(void);
 
 extern char *yytext;
 
-
-int main(const int argc, char *argv[]) {
-    int tok, i, dump_tab = 0, line_num = 0;
+int main(int argc, char *argv[]) {
+    int tok, i, dump_tab = 0, linum = 0;
     unsigned short temp;
     char temp_file[20];
 
-    // if the option `-s` is included on masm command, set up to dump the symbol table after the
-    // binary code
-    if (argc > 1 && 0 == strcmp(argv[1], "-s")) dump_tab = line_num = 1;
+    // if -s is included on masm command, set up to
+    // dump the symbol table after the binary code
+    if (argc > 1 && (strcmp(argv[1], "-s") == 0)) dump_tab = linum = 1;
 
     sprintf(temp_file, "/tmp/asm_%d", getuid());
 
     p1 = fopen(temp_file, "w+");
     unlink(temp_file);
-    while ((tok = yylex())) {
+    while (tok = yylex()) {
         switch (tok) {
-            // ReSharper disable once CppDFAUnusedValue
-            case LODD:
-                switch (tok = yylex()) {
+            case LODD: switch (tok = yylex()) {
                     case INTEG:
                         str_12(yytext);
                         fprintf(p1, "%d  0000%s\n", pc, cstr_12);
@@ -123,9 +124,7 @@ int main(const int argc, char *argv[]) {
                 }
                 break;
 
-            // ReSharper disable once CppDFAUnusedValue
-            case STOD:
-                switch (tok = yylex()) {
+            case STOD: switch (tok = yylex()) {
                     case INTEG:
                         str_12(yytext);
                         fprintf(p1, "%d  0001%s\n", pc, cstr_12);
@@ -139,9 +138,7 @@ int main(const int argc, char *argv[]) {
                 }
                 break;
 
-            // ReSharper disable once CppDFAUnusedValue
-            case ADDD:
-                switch (tok = yylex()) {
+            case ADDD: switch (tok = yylex()) {
                     case INTEG:
                         str_12(yytext);
                         fprintf(p1, "%d  0010%s\n", pc, cstr_12);
@@ -155,9 +152,7 @@ int main(const int argc, char *argv[]) {
                 }
                 break;
 
-            // ReSharper disable once CppDFAUnusedValue
-            case SUBD:
-                switch (tok = yylex()) {
+            case SUBD: switch (tok = yylex()) {
                     case INTEG:
                         str_12(yytext);
                         fprintf(p1, "%d  0011%s\n", pc, cstr_12);
@@ -171,9 +166,7 @@ int main(const int argc, char *argv[]) {
                 }
                 break;
 
-            // ReSharper disable once CppDFAUnusedValue
-            case JPOS:
-                switch (tok = yylex()) {
+            case JPOS: switch (tok = yylex()) {
                     case INTEG:
                         str_12(yytext);
                         fprintf(p1, "%d  0100%s\n", pc, cstr_12);
@@ -187,9 +180,7 @@ int main(const int argc, char *argv[]) {
                 }
                 break;
 
-            // ReSharper disable once CppDFAUnusedValue
-            case JZER:
-                switch (tok = yylex()) {
+            case JZER: switch (tok = yylex()) {
                     case INTEG:
                         str_12(yytext);
                         fprintf(p1, "%d  0101%s\n", pc, cstr_12);
@@ -203,9 +194,7 @@ int main(const int argc, char *argv[]) {
                 }
                 break;
 
-            // ReSharper disable once CppDFAUnusedValue
-            case JUMP:
-                switch (tok = yylex()) {
+            case JUMP: switch (tok = yylex()) {
                     case INTEG:
                         str_12(yytext);
                         fprintf(p1, "%d  0110%s\n", pc, cstr_12);
@@ -219,9 +208,7 @@ int main(const int argc, char *argv[]) {
                 }
                 break;
 
-            // ReSharper disable once CppDFAUnusedValue
-            case LOCO:
-                switch (tok = yylex()) {
+            case LOCO: switch (tok = yylex()) {
                     case INTEG:
                         if (yytext[0] == '-') {
                             fprintf(
@@ -242,9 +229,8 @@ int main(const int argc, char *argv[]) {
                 }
                 break;
 
-            // ReSharper disable once CppDFAUnusedValue
-            case LODL:
-                if ((tok = yylex()) != INTEG) {
+
+            case LODL: if ((tok = yylex()) != INTEG) {
                     fprintf(stderr, "Bad operand after LODL is %s\n", yytext);
                     exit(1);
                 }
@@ -252,9 +238,7 @@ int main(const int argc, char *argv[]) {
                 fprintf(p1, "%d  1000%s\n", pc, cstr_12);
                 break;
 
-            // ReSharper disable once CppDFAUnusedValue
-            case STOL:
-                if ((tok = yylex()) != INTEG) {
+            case STOL: if ((tok = yylex()) != INTEG) {
                     fprintf(stderr, "Bad operand after STOL is %s\n", yytext);
                     exit(1);
                 }
@@ -262,9 +246,7 @@ int main(const int argc, char *argv[]) {
                 fprintf(p1, "%d  1001%s\n", pc, cstr_12);
                 break;
 
-            // ReSharper disable once CppDFAUnusedValue
-            case ADDL:
-                if ((tok = yylex()) != INTEG) {
+            case ADDL: if ((tok = yylex()) != INTEG) {
                     fprintf(stderr, "Bad operand after ADDL is %s\n", yytext);
                     exit(1);
                 }
@@ -272,9 +254,7 @@ int main(const int argc, char *argv[]) {
                 fprintf(p1, "%d  1010%s\n", pc, cstr_12);
                 break;
 
-            // ReSharper disable once CppDFAUnusedValue
-            case SUBL:
-                if ((tok = yylex()) != INTEG) {
+            case SUBL: if ((tok = yylex()) != INTEG) {
                     fprintf(stderr, "Bad operand after SUBL is %s\n", yytext);
                     exit(1);
                 }
@@ -282,9 +262,7 @@ int main(const int argc, char *argv[]) {
                 fprintf(p1, "%d  1011%s\n", pc, cstr_12);
                 break;
 
-            // ReSharper disable once CppDFAUnusedValue
-            case JNEG:
-                switch (tok = yylex()) {
+            case JNEG: switch (tok = yylex()) {
                     case INTEG:
                         str_12(yytext);
                         fprintf(p1, "%d  1100%s\n", pc, cstr_12);
@@ -298,9 +276,7 @@ int main(const int argc, char *argv[]) {
                 }
                 break;
 
-            // ReSharper disable once CppDFAUnusedValue
-            case JNZE:
-                switch (tok = yylex()) {
+            case JNZE: switch (tok = yylex()) {
                     case INTEG:
                         str_12(yytext);
                         fprintf(p1, "%d  1101%s\n", pc, cstr_12);
@@ -314,9 +290,7 @@ int main(const int argc, char *argv[]) {
                 }
                 break;
 
-            // ReSharper disable once CppDFAUnusedValue
-            case CALL:
-                switch (tok = yylex()) {
+            case CALL: switch (tok = yylex()) {
                     case INTEG:
                         str_12(yytext);
                         fprintf(p1, "%d  1110%s\n", pc, cstr_12);
@@ -330,33 +304,25 @@ int main(const int argc, char *argv[]) {
                 }
                 break;
 
-            case PSHI:
-                fprintf(p1, "%d  1111000000000000\n", pc);
+            case PSHI: fprintf(p1, "%d  1111000000000000\n", pc);
                 break;
 
-            case POPI:
-                fprintf(p1, "%d  1111001000000000\n", pc);
+            case POPI: fprintf(p1, "%d  1111001000000000\n", pc);
                 break;
 
-            case PUSH:
-                fprintf(p1, "%d  1111010000000000\n", pc);
+            case PUSH: fprintf(p1, "%d  1111010000000000\n", pc);
                 break;
 
-            case POP:
-                fprintf(p1, "%d  1111011000000000\n", pc);
+            case POP: fprintf(p1, "%d  1111011000000000\n", pc);
                 break;
 
-            case RETN:
-                fprintf(p1, "%d  1111100000000000\n", pc);
+            case RETN: fprintf(p1, "%d  1111100000000000\n", pc);
                 break;
 
-            case SWAP:
-                fprintf(p1, "%d  1111101000000000\n", pc);
+            case SWAP: fprintf(p1, "%d  1111101000000000\n", pc);
                 break;
 
-            // ReSharper disable once CppDFAUnusedValue
-            case INSP:
-                if ((tok = yylex()) != INTEG) {
+            case INSP: if ((tok = yylex()) != INTEG) {
                     fprintf(stderr, "Bad operand after INSP is %s\n", yytext);
                     exit(1);
                 }
@@ -364,9 +330,7 @@ int main(const int argc, char *argv[]) {
                 fprintf(p1, "%d  11111100%s\n", pc, cstr_8);
                 break;
 
-            // ReSharper disable once CppDFAUnusedValue
-            case DESP:
-                if ((tok = yylex()) != INTEG) {
+            case DESP: if ((tok = yylex()) != INTEG) {
                     fprintf(stderr, "Bad operand after DESP is %s\n", yytext);
                     exit(1);
                 }
@@ -374,21 +338,33 @@ int main(const int argc, char *argv[]) {
                 fprintf(p1, "%d  11111110%s\n", pc, cstr_8);
                 break;
 
-            case HALT:
-                fprintf(p1, "%d  1111111111000000\n", pc);
+            case HALT: fprintf(p1, "%d  1111111111000000\n", pc);
                 break;
 
-            case NAND:
-                fprintf(p1, "%d  1111111100000000\n", pc);
+            case MULT: if ((tok = yylex()) != INTEG) {
+                    fprintf(stderr, "Bad operand after MULT is %s\n", yytext);
+                    exit(1);
+                }
+                str_6(yytext);
+                fprintf(p1, "%d 1111111100%s\n", pc, cstr_6);
+                break;
+            case RSHIFT: if ((tok = yylex()) != INTEG) {
+                    fprintf(stderr, "Bad operand after RSHIFT is %s\n", yytext);
+                    exit(1);
+                }
+                str_6(yytext);
+                fprintf(p1, "%d 1111111101%s\n", pc, cstr_6);
+                break;
+            case DIV: fprintf(p1, "%d 1111111110000000\n", pc);
                 break;
 
-            case INTEG:
-                str_16(yytext);
+
+            case INTEG: str_16(yytext);
                 fprintf(p1, "%d  %s\n", pc, cstr_16);
                 break;
 
-            case LABEL:
-                if (label_pc == pc) {
+            case LABEL: if (label_pc == pc) {
+                    /* for < lbx: lby: >   */
                     fprintf(p1, "%d  U0000000000000000    %s\n", pc, yytext);
                     break;
                 }
@@ -398,9 +374,8 @@ int main(const int argc, char *argv[]) {
                 pc--;
                 break;
 
-            // ReSharper disable once CppDFAUnusedValue
-            case LOC:
-                if ((tok = yylex()) != INTEG) {
+
+            case LOC: if ((tok = yylex()) != INTEG) {
                     fprintf(stderr, "Bad operand after .LOC is %s\n", yytext);
                     exit(1);
                 }
@@ -412,8 +387,7 @@ int main(const int argc, char *argv[]) {
                 pc = temp - 1;
                 break;
 
-            case STR:
-                i = 1;
+            case STR: i = 1;
                 do {
                     if (*(yytext + i) == '\"') {
                         bstr_16(0);
@@ -433,42 +407,19 @@ int main(const int argc, char *argv[]) {
             case JUNK: fprintf(stderr, "Unrecognized token is %s\n", yytext);
                 exit(26);
 
-            // ReSharper disable once CppDFAUnusedValue
-            case RSHIFT:
-                if ((tok = yylex() != INTEG)) {
-                    fprintf(stderr, "Bad operand after RSHIFT is %s\n", yytext);
-                    exit(1);
-                }
-                str_6(yytext);
-                fprintf(p1, "%d  1111111101%s\n", pc, cstr_6);
-                break;
-
-            // ReSharper disable once CppDFAUnusedValue
-            case MULT:
-                if ((tok = yylex()) != INTEG) {
-                    fprintf(stderr, "Bad operand after MULT is %s\n", yytext);
-                    exit(1);
-                }
-                str_6(yytext);
-                fprintf(p1, "%d 1111111100%s\n", pc, cstr_6);
-                break;
-
-            case DIV:
-                fprintf(p1, "%d 1111111110000000\n", pc);
-                break;
-
             default: fprintf(stderr, "Default case, unrecoverable error\n");
                 exit(26);
-        }
+        } // end while
         pc++;
-    }
+    } // end switch
 
-    generate_code(line_num);
+    generate_code(linum);
 
     if (dump_tab)dump_table();
 
     return 0;
-}
+} // end main
+
 
 // dump symbol table for -s masm command line option
 void dump_table(void) {
@@ -476,7 +427,7 @@ void dump_table(void) {
     struct nament *list;
     fd = popen("sort +0 -1 -f", "w");
     printf("***********************************************\n");
-    for (list = symbol_table; list != (struct nament *) 0; list = list->next) {
+    for (list = symtab; list != (struct nament *) 0; list = list->next) {
         fprintf(fd, "%-25s %4d\n", list->name, list->addr);
     }
     fclose(fd);
@@ -489,7 +440,7 @@ int get_sym_val(char *symbol) {
     int i, j;
     struct nament *element, *list;
 
-    for (list = symbol_table; list != (struct nament *) 0; list = list->next) {
+    for (list = symtab; list != (struct nament *) 0; list = list->next) {
         if (strcmp(list->name, symbol) == 0) {
             return (list->addr);
         }
@@ -558,7 +509,7 @@ void update_sym_table(char *symbol) {
     int i, j;
     struct nament *element, *list;
 
-    for (list = symbol_table; list; list = list->next) {
+    for (list = symtab; list; list = list->next) {
         if ((strcmp(list->name, symbol)) == 0) {
             list->addr = pc;
             return;
@@ -577,18 +528,32 @@ void search_sym_table(char *symbol) {
     int i, j;
     struct nament *element, *list;
 
-    for (list = symbol_table; list; list = list->next) {
+    for (list = symtab; list; list = list->next) {
         if (strcmp(list->name, symbol) == 0)return;
     }
     element = malloc(sizeof(struct nament));
     strcpy(element->name, symbol);
-    element->next = symbol_table;
-    symbol_table = element;
+    element->next = symtab;
+    symtab = element;
 }
 
-void str_6(const char *cstr) {
+// following functions take a string form of a
+// decimal number and convert it into a string of
+// corresponding 1 or 0 bits ... for example, if
+// str_6("23") was called, this function would take
+// the string value "23" and convert it into the
+// string value in 6 bits of "0010111" ... this string
+// of 7 characters would be left in the global array
+// char cstr_6[7];  seen at the beginning of this file.
+// There is a similar function and corresponding global
+// array for all of the bit strings we need to complete an
+// instruction, including the 6 bit string shown here to
+// complete an RSHIFT instruction
+//
+
+void str_6(char *cstr) {
     unsigned short str_val;
-    int i, mask;
+    int i, j, k, mask;
 
     str_val = (unsigned short) atoi(cstr);
 
@@ -597,6 +562,7 @@ void str_6(const char *cstr) {
     }
     cstr_6[6] = '\0';
 
+    j = 0;
     mask = 32;
     for (i = 0; i < 6; i++) {
         if (str_val & mask)

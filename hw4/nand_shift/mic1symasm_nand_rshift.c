@@ -59,13 +59,13 @@ char binstr_16[17];
 
 int label_pc = -1;
 
-void str_6(char *);
+void str_6(const char *);
 
-void str_8(char *);
+void str_8(const char *);
 
-void str_12(char *);
+void str_12(const char *);
 
-void str_16(char *);
+void str_16(const char *);
 
 void bstr_16(unsigned short);
 
@@ -73,7 +73,7 @@ void generate_code(int);
 
 void update_symbol_table(char *);
 
-void search_sym_table(char *);
+void search_symbol_table(char *);
 
 void dump_table(void);
 
@@ -361,7 +361,7 @@ int main(int argc, char *argv[]) {
                     fprintf(p1, "%d  U0000000000000000    %s\n", pc, yytext);
                     break;
                 }
-                search_sym_table(yytext);
+                search_symbol_table(yytext);
                 update_symbol_table(yytext);
                 label_pc = pc;
                 pc--;
@@ -517,7 +517,7 @@ void update_symbol_table(char *symbol) {
 // symbol into the table at the head of the
 // symbol table linked list
 
-void search_sym_table(char *symbol) {
+void search_symbol_table(char *symbol) {
     int i, j;
     struct nament *element, *list;
 
@@ -544,7 +544,7 @@ void search_sym_table(char *symbol) {
 // complete an RSHIFT instruction
 //
 
-void str_6(char *cstr) {
+void str_6(const char *cstr) {
     unsigned short str_val;
     int i, j, k, mask;
 
@@ -566,7 +566,7 @@ void str_6(char *cstr) {
 
 // for 8 bit INSP and DESP instructions
 
-void str_8(char *cstr) {
+void str_8(const char *cstr) {
     unsigned short str_val;
     int i, j, k, mask;
 
@@ -589,7 +589,7 @@ void str_8(char *cstr) {
 // for 12 bit address and constant instructions like
 // LODD and LOCO
 
-void str_12(char *cstr) {
+void str_12(const char *cstr) {
     unsigned short str_val;
     int i, j, k, mask;
 
@@ -612,7 +612,7 @@ void str_12(char *cstr) {
 // for full 16 bit strings representing 2s complement
 // integer values in memory
 
-void str_16(char *cstr) {
+void str_16(const char *cstr) {
     short str_val;
     int i, j, k, mask;
 

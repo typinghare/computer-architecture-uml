@@ -1,6 +1,6 @@
 // Copyright 2024 lJames
-
 // ReSharper disable CppDFAUnusedValue
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -46,7 +46,7 @@
 #define DIV 32
 
 /**
- * Global constants
+ * Global constants.
  */
 char cstr_6[7];
 char cstr_8[9];
@@ -57,10 +57,10 @@ int label_pc = -1;
 unsigned short pc = 0;
 FILE* p1;
 
-void str_6(char*);
-void str_8(char*);
-void str_12(char*);
-void str_16(char*);
+void str_6(const char*);
+void str_8(const char*);
+void str_12(const char*);
+void str_16(const char*);
 void bstr_16(unsigned short);
 
 /**
@@ -70,14 +70,16 @@ void bstr_16(unsigned short);
 void generate_code(int);
 
 /**
- * @brief Updates the symbol table.
+ * @brief Enter the value of a symbol to the symbol table.
  */
-void update_symbol_table(const char*);
+void update_symbol_table(const char* symbol);
 
 /**
- *
+ * Searches the symbol table for a symbol. Return the symbol as soon as it is
+ * found, otherwise, add the symbol to the table at the head of the symbol table
+ * linked list.
  */
-void search_sym_table(char*);
+void search_symbol_table(const char* symbol);
 
 /**
  * @brief Dumps a symbol table for the `-s` masm command line option.
@@ -442,7 +444,7 @@ int main(const int argc, char* argv[]) {
                     fprintf(p1, "%d  U0000000000000000    %s\n", pc, yytext);
                     break;
                 }
-                search_sym_table(yytext);
+                search_symbol_table(yytext);
                 update_symbol_table(yytext);
                 label_pc = pc;
                 pc--;
@@ -572,9 +574,6 @@ void generate_code(const int line_num) {
     fclose(p1);
 }
 
-
-// enter the value of a symbol into the symbol table
-// entry for that symbol when the value is discovered
 void update_symbol_table(const char* symbol) {
     for (struct nament* list = symbol_table; list; list = list->next) {
         if (strcmp(list->name, symbol) == 0) {
@@ -586,20 +585,12 @@ void update_symbol_table(const char* symbol) {
     exit(27);
 }
 
-// search the symbol table for a symbol
-// if found just return, if not, add the
-// symbol into the table at the head of the
-// symbol table linked list
-
-void search_sym_table(char* symbol) {
-    int i, j;
-    struct nament *element, *list;
-
-    for (list = symbol_table; list; list = list->next) {
+void search_symbol_table(const char* symbol) {
+    for (const struct nament* list = symbol_table; list; list = list->next) {
         if (strcmp(list->name, symbol) == 0)
             return;
     }
-    element = malloc(sizeof(struct nament));
+    struct nament* element = malloc(sizeof(struct nament));
     strcpy(element->name, symbol);
     element->next = symbol_table;
     symbol_table = element;
@@ -614,25 +605,21 @@ void search_sym_table(char* symbol) {
 // of 7 characters would be left in the global array
 // char cstr_6[7];  seen at the beginning of this file.
 // There is a similar function and corresponding global
-// array for all of the bit strings we need to complete an
+// array for all the bit strings we need to complete an
 // instruction, including the 6 bit string shown here to
 // complete an RSHIFT instruction
 //
 
-void str_6(char* cstr) {
-    unsigned short str_val;
-    int i, j, k, mask;
+void str_6(const char* cstr) {
+    const unsigned short str_val = atoi(cstr);
 
-    str_val = (unsigned short)atoi(cstr);
-
-    for (i = 0; i < 6; i++) {
+    for (int i = 0; i < 6; i++) {
         cstr_6[i] = '0';
     }
     cstr_6[6] = '\0';
 
-    j = 0;
-    mask = 32;
-    for (i = 0; i < 6; i++) {
+    int mask = 32;
+    for (int i = 0; i < 6; i++) {
         if (str_val & mask)
             cstr_6[i] = '1';
         mask >>= 1;
@@ -641,20 +628,16 @@ void str_6(char* cstr) {
 
 // for 8 bit INSP and DESP instructions
 
-void str_8(char* cstr) {
-    unsigned short str_val;
-    int i, j, k, mask;
+void str_8(const char* cstr) {
+    const unsigned short str_val = atoi(cstr);
 
-    str_val = (unsigned short)atoi(cstr);
-
-    for (i = 0; i < 8; i++) {
+    for (int i = 0; i < 8; i++) {
         cstr_8[i] = '0';
     }
     cstr_8[8] = '\0';
 
-    j = 0;
-    mask = 128;
-    for (i = 0; i < 8; i++) {
+    int mask = 128;
+    for (int i = 0; i < 8; i++) {
         if (str_val & mask)
             cstr_8[i] = '1';
         mask >>= 1;
@@ -664,20 +647,16 @@ void str_8(char* cstr) {
 // for 12 bit address and constant instructions like
 // LODD and LOCO
 
-void str_12(char* cstr) {
-    unsigned short str_val;
-    int i, j, k, mask;
+void str_12(const char* cstr) {
+    const unsigned short str_val = atoi(cstr);
 
-    str_val = (unsigned short)atoi(cstr);
-
-    for (i = 0; i < 12; i++) {
+    for (int i = 0; i < 12; i++) {
         cstr_12[i] = '0';
     }
     cstr_12[12] = '\0';
 
-    j = 0;
-    mask = 2048;
-    for (i = 0; i < 12; i++) {
+    int mask = 2048;
+    for (int i = 0; i < 12; i++) {
         if (str_val & mask)
             cstr_12[i] = '1';
         mask >>= 1;
@@ -687,19 +666,16 @@ void str_12(char* cstr) {
 // for full 16 bit strings representing 2s complement
 // integer values in memory
 
-void str_16(char* cstr) {
-    short str_val;
-    int i, j, k, mask;
+void str_16(const char* cstr) {
+    const short str_val = atoi(cstr);
 
-    str_val = (short)atoi(cstr);
-
-    for (i = 0; i < 16; i++) {
+    for (int i = 0; i < 16; i++) {
         cstr_16[i] = '0';
     }
     cstr_16[16] = '\0';
 
-    mask = (1024 * 32);
-    for (i = 0; i < 16; i++) {
+    int mask = 1024 * 32;
+    for (int i = 0; i < 16; i++) {
         if (str_val & mask)
             cstr_16[i] = '1';
         mask >>= 1;
@@ -713,19 +689,16 @@ void str_16(char* cstr) {
 // strings to binary strings, but here we're converting
 // a real C short to a corresponding 16 bit binary string
 
-void bstr_16(unsigned short bin_num) {
-    short str_val;
-    int i, j, k, mask;
+void bstr_16(const unsigned short bin_num) {
+    const short str_val = bin_num;
 
-    str_val = bin_num;
-
-    for (i = 0; i < 16; i++) {
+    for (int i = 0; i < 16; i++) {
         binstr_16[i] = '0';
     }
     binstr_16[16] = '\0';
 
-    mask = (1024 * 32);
-    for (i = 0; i < 16; i++) {
+    int mask = 1024 * 32;
+    for (int i = 0; i < 16; i++) {
         if (str_val & mask)
             binstr_16[i] = '1';
         mask >>= 1;

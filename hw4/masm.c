@@ -635,19 +635,27 @@ void search_symbol_table(const char* symbol) {
     symbol_table = element;
 }
 
+// void str_6(const char* cstr) {
+//     const unsigned short str_val = atoi(cstr);
+//
+//     for (int i = 0; i < 6; i++) {
+//         cstr_6[i] = '0';
+//     }
+//     cstr_6[6] = '\0';
+//
+//     int mask = 32;
+//     for (int i = 0; i < 6; i++) {
+//         if (str_val & mask)
+//             cstr_6[i] = '1';
+//         mask >>= 1;
+//     }
+// }
+
 void str_6(const char* cstr) {
     const unsigned short str_val = atoi(cstr);
-
-    for (int i = 0; i < 6; i++) {
-        cstr_6[i] = '0';
-    }
-    cstr_6[6] = '\0';
-
     int mask = 32;
-    for (int i = 0; i < 6; i++) {
-        if (str_val & mask)
-            cstr_6[i] = '1';
-        mask >>= 1;
+    for (int i = 0; i < 6; i++, mask >>= 1) {
+        cstr_6[i] = str_val & mask ? '1' : '0';
     }
 }
 

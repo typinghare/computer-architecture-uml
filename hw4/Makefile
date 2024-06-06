@@ -10,7 +10,7 @@ $(LEXER): lex.yy.ll
 	$(FLEX_COMPILER) $<
 
 $(MASM): masm.o lex.yy.o
-	$(C_COMPILER) -o $@ $<
+	$(C_COMPILER) -o $@ $^
 
 clean:
 	rm *.o $(MASM) $(LEXER)

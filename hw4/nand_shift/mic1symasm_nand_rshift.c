@@ -71,7 +71,7 @@ void bstr_16(unsigned short);
 
 void generate_code(int);
 
-void update_sym_table(char *);
+void update_symbol_table(char *);
 
 void search_sym_table(char *);
 
@@ -87,7 +87,7 @@ struct nament {
 };
 
 // head of our symbol table
-struct nament *symtab = NULL;
+struct nament *symbol_table = NULL;
 
 // imported from the lex.yy.c code
 extern int yylex(void);
@@ -362,7 +362,7 @@ int main(int argc, char *argv[]) {
                     break;
                 }
                 search_sym_table(yytext);
-                update_sym_table(yytext);
+                update_symbol_table(yytext);
                 label_pc = pc;
                 pc--;
                 break;
@@ -420,7 +420,7 @@ void dump_table(void) {
     struct nament *list;
     fd = popen("sort +0 -1 -f", "w");
     printf("***********************************************\n");
-    for (list = symtab; list != (struct nament *) 0; list = list->next) {
+    for (list = symbol_table; list != (struct nament *) 0; list = list->next) {
         fprintf(fd, "%-25s %4d\n", list->name, list->addr);
     }
     fclose(fd);
@@ -429,11 +429,11 @@ void dump_table(void) {
 }
 
 // return symbol value to complete an instruction
-int get_sym_val(char *symbol) {
+int get_symbol_val(char *symbol) {
     int i, j;
     struct nament *element, *list;
 
-    for (list = symtab; list != (struct nament *) 0; list = list->next) {
+    for (list = symbol_table; list != (struct nament *) 0; list = list->next) {
         if (strcmp(list->name, symbol) == 0) {
             return (list->addr);
         }
@@ -444,7 +444,7 @@ int get_sym_val(char *symbol) {
 // rewind the temporary file and complete each unresolved
 // instruction ... send binary to stdout
 
-void generate_code(int linum) {
+void generate_code(int line_num) {
     char linbuf[10];
     char instruction[18];
     int line_number;
@@ -460,7 +460,7 @@ void generate_code(int linum) {
         if ((diff = pc - old_pc) > 1) {
             for (j = 1; j < diff; j++) {
                 sprintf(linbuf, "%5d:  ", line_number++);
-                printf("%s1111111111111111\n", (linum ? linbuf : "\0"));
+                printf("%s1111111111111111\n", (line_num ? linbuf : "\0"));
             }
         }
         sprintf(linbuf, "%5d:  ", line_number++);
@@ -468,7 +468,7 @@ void generate_code(int linum) {
 
         if (instruction[0] == 'U') {
             fscanf(p1, "%s", symbol);
-            if ((sym_val = get_sym_val(symbol)) == -1) {
+            if ((sym_val = get_symbol_val(symbol)) == -1) {
                 fprintf(stderr, "no symbol in symbol table: %s\n", symbol);
                 exit(27);
             }
@@ -487,9 +487,9 @@ void generate_code(int linum) {
             for (i = 0; i < 12; i++) {
                 instruction[i + 5] = cstr_12[i];
             }
-            printf("%s%s\n", (linum ? linbuf : "\0"), &instruction[1]);
+            printf("%s%s\n", (line_num ? linbuf : "\0"), &instruction[1]);
         } else
-            printf("%s%s\n", (linum ? linbuf : "\0"), instruction);
+            printf("%s%s\n", (line_num ? linbuf : "\0"), instruction);
     }
     fclose(p1);
 }
@@ -498,11 +498,11 @@ void generate_code(int linum) {
 // enter the value of a symbol into the symbol table
 // entry for that symbol when the value is discovered
 
-void update_sym_table(char *symbol) {
+void update_symbol_table(char *symbol) {
     int i, j;
     struct nament *element, *list;
 
-    for (list = symtab; list; list = list->next) {
+    for (list = symbol_table; list; list = list->next) {
         if ((strcmp(list->name, symbol)) == 0) {
             list->addr = pc;
             return;
@@ -521,13 +521,13 @@ void search_sym_table(char *symbol) {
     int i, j;
     struct nament *element, *list;
 
-    for (list = symtab; list; list = list->next) {
+    for (list = symbol_table; list; list = list->next) {
         if (strcmp(list->name, symbol) == 0)return;
     }
     element = malloc(sizeof(struct nament));
     strcpy(element->name, symbol);
-    element->next = symtab;
-    symtab = element;
+    element->next = symbol_table;
+    symbol_table = element;
 }
 
 // following functions take a string form of a

@@ -1,219 +1,259 @@
-// assembly parser for mic1 assembly code that
-// has been extended to include the RSHIFT and
-// NAND 10 bit opcodes (HALT also moved to 10 bit)
+// Copyright 2024 lJames
 
+// ReSharper disable CppDFAUnusedValue
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#include <unistd.h>
 #include <sys/types.h>
 #include <sys/wait.h>
+#include <unistd.h>
 
-// same defines as in the flex scanner file
-// should put these in an include file and
-// include them in both flex file and here
+/**
+ * Mic-1 Macro instructions. Three macro instructions are added to the new macro
+ * compiler.
+ */
+#define LODD 1
+#define STOD 2
+#define ADDD 3
+#define SUBD 4
+#define JPOS 5
+#define JZER 6
+#define JUMP 7
+#define LOCO 8
+#define LODL 9
+#define STOL 10
+#define ADDL 11
+#define SUBL 12
+#define JNEG 13
+#define JNZE 14
+#define CALL 15
+#define PSHI 16
+#define POPI 17
+#define PUSH 18
+#define POP 19
+#define RETN 20
+#define SWAP 21
+#define INSP 22
+#define DESP 23
+#define HALT 24
+#define INTEG 25
+#define JUNK 26
+#define LABEL 27
+#define LOC 28
+#define STR 29
+#define MULT 30
+#define RSHIFT 31
+#define DIV 32
 
-#define         LODD       1
-#define         STOD       2
-#define         ADDD       3
-#define         SUBD       4
-#define         JPOS       5
-#define         JZER       6
-#define         JUMP       7
-#define         LOCO       8
-#define         LODL       9
-#define         STOL      10
-#define         ADDL      11
-#define         SUBL      12
-#define         JNEG      13
-#define         JNZE      14
-#define         CALL      15
-#define         PSHI      16
-#define         POPI      17
-#define         PUSH      18
-#define         POP       19
-#define         RETN      20
-#define         SWAP      21
-#define         INSP      22
-#define         DESP      23
-#define         HALT      24
-#define         INTEG     25
-#define         JUNK      26
-#define         LABEL     27
-#define         LOC       28
-#define         STR       29
-#define         MULT      30
-#define		    RSHIFT	  31
-#define         DIV       32
-
-// global strings used with the similarly named
-// functions below (i.e. cstr_6 is set by str_6()
-// such that str_6("27") would load the cstr_6
-// array with the string "011011").  These are
-// global so they can be used by several functions
-
+/**
+ * Global constants
+ */
 char cstr_6[7];
 char cstr_8[9];
 char cstr_12[13];
 char cstr_16[17];
 char binstr_16[17];
-
 int label_pc = -1;
+unsigned short pc = 0;
+FILE* p1;
 
-void str_6(char *);
-
-void str_8(char *);
-
-void str_12(char *);
-
-void str_16(char *);
-
+void str_6(char*);
+void str_8(char*);
+void str_12(char*);
+void str_16(char*);
 void bstr_16(unsigned short);
 
+/**
+ * @brief Rewinds the temporary file and complete each unresolved instruction,
+ * then send binary to stdout.
+ */
 void generate_code(int);
 
-void update_sym_table(char *);
+/**
+ * @brief Updates the symbol table.
+ */
+void update_symbol_table(char*);
 
-void search_sym_table(char *);
+/**
+ *
+ */
+void search_sym_table(char*);
 
+/**
+ * @brief Dumps a symbol table for the `-s` masm command line option.
+ */
 void dump_table(void);
 
-unsigned short pc = 0;
-FILE *p1;
+/**
+ * @brief Returns symbol value to complete an instruction.
+ */
+int get_symbol_val(const char* symbol);
 
+/**
+ * @brief Label name node.
+ */
 struct nament {
     char name[26];
     int addr;
-    struct nament *next;
+    struct nament* next;
 };
 
-// head of our symbol table
-struct nament *symtab = NULL;
+struct nament* symbol_table = NULL;
 
-// imported from the lex.yy.c code
+// Imported from `lex.yy.c`
 extern int yylex(void);
+extern char* yytext;
 
-extern char *yytext;
-
-int main(int argc, char *argv[]) {
-    int tok, i, dump_tab = 0, linum = 0;
+int main(const int argc, char* argv[]) {
+    int tok, i, dump_tab = 0, line_number = 0;
     unsigned short temp;
     char temp_file[20];
 
-    // if -s is included on masm command, set up to
-    // dump the symbol table after the binary code
-    if (argc > 1 && (strcmp(argv[1], "-s") == 0)) dump_tab = linum = 1;
+    // if option `-s` is included on masm command, then set up to dump the
+    // symbol table after the binary code
+    if (argc > 1 && (strcmp(argv[1], "-s") == 0))
+        dump_tab = line_number = 1;
 
     sprintf(temp_file, "/tmp/asm_%d", getuid());
-
     p1 = fopen(temp_file, "w+");
     unlink(temp_file);
-    while (tok = yylex()) {
+
+    while ((tok = yylex())) {
         switch (tok) {
-            case LODD: switch (tok = yylex()) {
+            case LODD:
+                switch (tok = yylex()) {
                     case INTEG:
                         str_12(yytext);
                         fprintf(p1, "%d  0000%s\n", pc, cstr_12);
                         break;
                     case LABEL:
-                        fprintf(p1, "%d  U0000000000000000    %s\n", pc, yytext);
+                        fprintf(
+                            p1, "%d  U0000000000000000    %s\n", pc, yytext);
                         break;
                     default:
-                        fprintf(stderr, "Bad operand after LODD is %s on line %d\n", yytext, pc);
+                        fprintf(
+                            stderr, "Bad operand after LODD is %s on line %d\n",
+                            yytext, pc);
                         exit(1);
                 }
                 break;
 
-            case STOD: switch (tok = yylex()) {
+            case STOD:
+                switch (tok = yylex()) {
                     case INTEG:
                         str_12(yytext);
                         fprintf(p1, "%d  0001%s\n", pc, cstr_12);
                         break;
                     case LABEL:
-                        fprintf(p1, "%d  U0001000000000000    %s\n", pc, yytext);
+                        fprintf(
+                            p1, "%d  U0001000000000000    %s\n", pc, yytext);
                         break;
                     default:
-                        fprintf(stderr, "Bad operand after STOD is %s on line %d\n", yytext, pc);
+                        fprintf(
+                            stderr, "Bad operand after STOD is %s on line %d\n",
+                            yytext, pc);
                         exit(1);
                 }
                 break;
 
-            case ADDD: switch (tok = yylex()) {
+            case ADDD:
+                switch (tok = yylex()) {
                     case INTEG:
                         str_12(yytext);
                         fprintf(p1, "%d  0010%s\n", pc, cstr_12);
                         break;
                     case LABEL:
-                        fprintf(p1, "%d  U0010000000000000    %s\n", pc, yytext);
+                        fprintf(
+                            p1, "%d  U0010000000000000    %s\n", pc, yytext);
                         break;
                     default:
-                        fprintf(stderr, "Bad operand after ADDD is %s on line %d\n", yytext, pc);
+                        fprintf(
+                            stderr, "Bad operand after ADDD is %s on line %d\n",
+                            yytext, pc);
                         exit(1);
                 }
                 break;
 
-            case SUBD: switch (tok = yylex()) {
+            case SUBD:
+                switch (tok = yylex()) {
                     case INTEG:
                         str_12(yytext);
                         fprintf(p1, "%d  0011%s\n", pc, cstr_12);
                         break;
                     case LABEL:
-                        fprintf(p1, "%d  U0011000000000000    %s\n", pc, yytext);
+                        fprintf(
+                            p1, "%d  U0011000000000000    %s\n", pc, yytext);
                         break;
                     default:
-                        fprintf(stderr, "Bad operand after SUBD is %s on line %d\n", yytext, pc);
+                        fprintf(
+                            stderr, "Bad operand after SUBD is %s on line %d\n",
+                            yytext, pc);
                         exit(1);
                 }
                 break;
 
-            case JPOS: switch (tok = yylex()) {
+            case JPOS:
+                switch (tok = yylex()) {
                     case INTEG:
                         str_12(yytext);
                         fprintf(p1, "%d  0100%s\n", pc, cstr_12);
                         break;
                     case LABEL:
-                        fprintf(p1, "%d  U0100000000000000    %s\n", pc, yytext);
+                        fprintf(
+                            p1, "%d  U0100000000000000    %s\n", pc, yytext);
                         break;
                     default:
-                        fprintf(stderr, "Bad operand after JPOS is %s on line %d\n", yytext, pc);
+                        fprintf(
+                            stderr, "Bad operand after JPOS is %s on line %d\n",
+                            yytext, pc);
                         exit(1);
                 }
                 break;
 
-            case JZER: switch (tok = yylex()) {
+            case JZER:
+                switch (tok = yylex()) {
                     case INTEG:
                         str_12(yytext);
                         fprintf(p1, "%d  0101%s\n", pc, cstr_12);
                         break;
                     case LABEL:
-                        fprintf(p1, "%d  U0101000000000000    %s\n", pc, yytext);
+                        fprintf(
+                            p1, "%d  U0101000000000000    %s\n", pc, yytext);
                         break;
                     default:
-                        fprintf(stderr, "Bad operand after JZER is %s on line %d\n", yytext, pc);
+                        fprintf(
+                            stderr, "Bad operand after JZER is %s on line %d\n",
+                            yytext, pc);
                         exit(1);
                 }
                 break;
 
-            case JUMP: switch (tok = yylex()) {
+            case JUMP:
+                switch (tok = yylex()) {
                     case INTEG:
                         str_12(yytext);
                         fprintf(p1, "%d  0110%s\n", pc, cstr_12);
                         break;
                     case LABEL:
-                        fprintf(p1, "%d  U0110000000000000    %s\n", pc, yytext);
+                        fprintf(
+                            p1, "%d  U0110000000000000    %s\n", pc, yytext);
                         break;
                     default:
-                        fprintf(stderr, "Bad operand after JUMP is %s on line %d\n", yytext, pc);
+                        fprintf(
+                            stderr, "Bad operand after JUMP is %s on line %d\n",
+                            yytext, pc);
                         exit(1);
                 }
                 break;
 
-            case LOCO: switch (tok = yylex()) {
+            case LOCO:
+                switch (tok = yylex()) {
                     case INTEG:
                         if (yytext[0] == '-') {
                             fprintf(
                                 stderr,
-                                "Negative operand after LOCO is %s on line %d, must be positive !\n",
+                                "Negative operand after LOCO is %s on line %d, "
+                                "must be positive !\n",
                                 yytext, pc);
                             exit(1);
                         }
@@ -221,16 +261,20 @@ int main(int argc, char *argv[]) {
                         fprintf(p1, "%d  0111%s\n", pc, cstr_12);
                         break;
                     case LABEL:
-                        fprintf(p1, "%d  U0111000000000000    %s\n", pc, yytext);
+                        fprintf(
+                            p1, "%d  U0111000000000000    %s\n", pc, yytext);
                         break;
                     default:
-                        fprintf(stderr, "Bad operand after LOCO is %s on line %d\n", yytext, pc);
+                        fprintf(
+                            stderr, "Bad operand after LOCO is %s on line %d\n",
+                            yytext, pc);
                         exit(1);
                 }
                 break;
 
 
-            case LODL: if ((tok = yylex()) != INTEG) {
+            case LODL:
+                if ((tok = yylex()) != INTEG) {
                     fprintf(stderr, "Bad operand after LODL is %s\n", yytext);
                     exit(1);
                 }
@@ -238,7 +282,8 @@ int main(int argc, char *argv[]) {
                 fprintf(p1, "%d  1000%s\n", pc, cstr_12);
                 break;
 
-            case STOL: if ((tok = yylex()) != INTEG) {
+            case STOL:
+                if ((tok = yylex()) != INTEG) {
                     fprintf(stderr, "Bad operand after STOL is %s\n", yytext);
                     exit(1);
                 }
@@ -246,7 +291,8 @@ int main(int argc, char *argv[]) {
                 fprintf(p1, "%d  1001%s\n", pc, cstr_12);
                 break;
 
-            case ADDL: if ((tok = yylex()) != INTEG) {
+            case ADDL:
+                if ((tok = yylex()) != INTEG) {
                     fprintf(stderr, "Bad operand after ADDL is %s\n", yytext);
                     exit(1);
                 }
@@ -254,7 +300,8 @@ int main(int argc, char *argv[]) {
                 fprintf(p1, "%d  1010%s\n", pc, cstr_12);
                 break;
 
-            case SUBL: if ((tok = yylex()) != INTEG) {
+            case SUBL:
+                if ((tok = yylex()) != INTEG) {
                     fprintf(stderr, "Bad operand after SUBL is %s\n", yytext);
                     exit(1);
                 }
@@ -262,67 +309,86 @@ int main(int argc, char *argv[]) {
                 fprintf(p1, "%d  1011%s\n", pc, cstr_12);
                 break;
 
-            case JNEG: switch (tok = yylex()) {
+            case JNEG:
+                switch (tok = yylex()) {
                     case INTEG:
                         str_12(yytext);
                         fprintf(p1, "%d  1100%s\n", pc, cstr_12);
                         break;
                     case LABEL:
-                        fprintf(p1, "%d  U1100000000000000    %s\n", pc, yytext);
+                        fprintf(
+                            p1, "%d  U1100000000000000    %s\n", pc, yytext);
                         break;
                     default:
-                        fprintf(stderr, "Bad operand after JNEG is %s on line %d\n", yytext, pc);
+                        fprintf(
+                            stderr, "Bad operand after JNEG is %s on line %d\n",
+                            yytext, pc);
                         exit(1);
                 }
                 break;
 
-            case JNZE: switch (tok = yylex()) {
+            case JNZE:
+                switch (tok = yylex()) {
                     case INTEG:
                         str_12(yytext);
                         fprintf(p1, "%d  1101%s\n", pc, cstr_12);
                         break;
                     case LABEL:
-                        fprintf(p1, "%d  U1101000000000000    %s\n", pc, yytext);
+                        fprintf(
+                            p1, "%d  U1101000000000000    %s\n", pc, yytext);
                         break;
                     default:
-                        fprintf(stderr, "Bad operand after JNZE is %s on line %d\n", yytext, pc);
+                        fprintf(
+                            stderr, "Bad operand after JNZE is %s on line %d\n",
+                            yytext, pc);
                         exit(1);
                 }
                 break;
 
-            case CALL: switch (tok = yylex()) {
+            case CALL:
+                switch (tok = yylex()) {
                     case INTEG:
                         str_12(yytext);
                         fprintf(p1, "%d  1110%s\n", pc, cstr_12);
                         break;
                     case LABEL:
-                        fprintf(p1, "%d  U1110000000000000    %s\n", pc, yytext);
+                        fprintf(
+                            p1, "%d  U1110000000000000    %s\n", pc, yytext);
                         break;
                     default:
-                        fprintf(stderr, "Bad operand after CALL is %s on line %d\n", yytext, pc);
+                        fprintf(
+                            stderr, "Bad operand after CALL is %s on line %d\n",
+                            yytext, pc);
                         exit(1);
                 }
                 break;
 
-            case PSHI: fprintf(p1, "%d  1111000000000000\n", pc);
+            case PSHI:
+                fprintf(p1, "%d  1111000000000000\n", pc);
                 break;
 
-            case POPI: fprintf(p1, "%d  1111001000000000\n", pc);
+            case POPI:
+                fprintf(p1, "%d  1111001000000000\n", pc);
                 break;
 
-            case PUSH: fprintf(p1, "%d  1111010000000000\n", pc);
+            case PUSH:
+                fprintf(p1, "%d  1111010000000000\n", pc);
                 break;
 
-            case POP: fprintf(p1, "%d  1111011000000000\n", pc);
+            case POP:
+                fprintf(p1, "%d  1111011000000000\n", pc);
                 break;
 
-            case RETN: fprintf(p1, "%d  1111100000000000\n", pc);
+            case RETN:
+                fprintf(p1, "%d  1111100000000000\n", pc);
                 break;
 
-            case SWAP: fprintf(p1, "%d  1111101000000000\n", pc);
+            case SWAP:
+                fprintf(p1, "%d  1111101000000000\n", pc);
                 break;
 
-            case INSP: if ((tok = yylex()) != INTEG) {
+            case INSP:
+                if ((tok = yylex()) != INTEG) {
                     fprintf(stderr, "Bad operand after INSP is %s\n", yytext);
                     exit(1);
                 }
@@ -330,7 +396,8 @@ int main(int argc, char *argv[]) {
                 fprintf(p1, "%d  11111100%s\n", pc, cstr_8);
                 break;
 
-            case DESP: if ((tok = yylex()) != INTEG) {
+            case DESP:
+                if ((tok = yylex()) != INTEG) {
                     fprintf(stderr, "Bad operand after DESP is %s\n", yytext);
                     exit(1);
                 }
@@ -338,96 +405,106 @@ int main(int argc, char *argv[]) {
                 fprintf(p1, "%d  11111110%s\n", pc, cstr_8);
                 break;
 
-            case HALT: fprintf(p1, "%d  1111111111000000\n", pc);
+            case HALT:
+                fprintf(p1, "%d  1111111111000000\n", pc);
                 break;
 
-            case MULT: if ((tok = yylex()) != INTEG) {
+            case MULT:
+                if ((tok = yylex()) != INTEG) {
                     fprintf(stderr, "Bad operand after MULT is %s\n", yytext);
                     exit(1);
                 }
                 str_6(yytext);
                 fprintf(p1, "%d 1111111100%s\n", pc, cstr_6);
                 break;
-            case RSHIFT: if ((tok = yylex()) != INTEG) {
+
+            case RSHIFT:
+                if ((tok = yylex()) != INTEG) {
                     fprintf(stderr, "Bad operand after RSHIFT is %s\n", yytext);
                     exit(1);
                 }
                 str_6(yytext);
                 fprintf(p1, "%d 1111111101%s\n", pc, cstr_6);
                 break;
-            case DIV: fprintf(p1, "%d 1111111110000000\n", pc);
+
+            case DIV:
+                fprintf(p1, "%d 1111111110000000\n", pc);
                 break;
 
-
-            case INTEG: str_16(yytext);
+            case INTEG:
+                str_16(yytext);
                 fprintf(p1, "%d  %s\n", pc, cstr_16);
                 break;
 
-            case LABEL: if (label_pc == pc) {
+            case LABEL:
+                if (label_pc == pc) {
                     /* for < lbx: lby: >   */
                     fprintf(p1, "%d  U0000000000000000    %s\n", pc, yytext);
                     break;
                 }
                 search_sym_table(yytext);
-                update_sym_table(yytext);
+                update_symbol_table(yytext);
                 label_pc = pc;
                 pc--;
                 break;
 
-
-            case LOC: if ((tok = yylex()) != INTEG) {
+            case LOC:
+                if ((tok = yylex()) != INTEG) {
                     fprintf(stderr, "Bad operand after .LOC is %s\n", yytext);
                     exit(1);
                 }
-                if ((temp = ((unsigned short) atoi(yytext))) < pc) {
-                    fprintf(stderr, "Bad operand after .LOC is %s, TOO SMALL !\n", yytext);
+                if ((temp = ((unsigned short)atoi(yytext))) < pc) {
+                    fprintf(
+                        stderr, "Bad operand after .LOC is %s, TOO SMALL !\n",
+                        yytext);
                     exit(1);
                 }
 
                 pc = temp - 1;
                 break;
 
-            case STR: i = 1;
+            case STR:
+                i = 1;
                 do {
                     if (*(yytext + i) == '\"') {
                         bstr_16(0);
                         fprintf(p1, "%d  %s\n", pc, binstr_16);
                         break;
                     }
-                    temp = (unsigned short) *(yytext + i++);
+                    temp = (unsigned short)*(yytext + i++);
                     if (*(yytext + i) != '\"') {
-                        temp = (temp | ((unsigned short) *(yytext + i) << 8));
+                        temp = (temp | ((unsigned short)*(yytext + i) << 8));
                     }
                     bstr_16(temp);
                     fprintf(p1, "%d  %s\n", pc, binstr_16);
-                } while (*(yytext + i++) != '\"' && ++pc);
+                }
+                while (*(yytext + i++) != '\"' && ++pc);
                 break;
 
-
-            case JUNK: fprintf(stderr, "Unrecognized token is %s\n", yytext);
+            case JUNK:
+                fprintf(stderr, "Unrecognized token is %s\n", yytext);
                 exit(26);
 
-            default: fprintf(stderr, "Default case, unrecoverable error\n");
+            default:
+                fprintf(stderr, "Default case, unrecoverable error\n");
                 exit(26);
-        } // end while
+        }  // end while
         pc++;
-    } // end switch
+    }  // end switch
 
-    generate_code(linum);
+    generate_code(line_number);
 
-    if (dump_tab)dump_table();
+    if (dump_tab)
+        dump_table();
 
     return 0;
-} // end main
+}
 
-
-// dump symbol table for -s masm command line option
 void dump_table(void) {
-    FILE *fd;
-    struct nament *list;
-    fd = popen("sort +0 -1 -f", "w");
+    FILE* fd = popen("sort +0 -1 -f", "w");
     printf("***********************************************\n");
-    for (list = symtab; list != (struct nament *) 0; list = list->next) {
+    for (struct nament* list = symbol_table; list != (struct nament*)0;
+         list = list->next) {
         fprintf(fd, "%-25s %4d\n", list->name, list->addr);
     }
     fclose(fd);
@@ -435,47 +512,41 @@ void dump_table(void) {
     printf("***********************************************\n");
 }
 
-// return symbol value to complete an instruction
-int get_sym_val(char *symbol) {
-    int i, j;
-    struct nament *element, *list;
-
-    for (list = symtab; list != (struct nament *) 0; list = list->next) {
+int get_symbol_val(const char* symbol) {
+    for (const struct nament* list = symbol_table; list != NULL;
+         list = list->next) {
         if (strcmp(list->name, symbol) == 0) {
-            return (list->addr);
+            return list->addr;
         }
     }
-    return (-1);
+
+    return -1;
 }
 
-// rewind the temporary file and complete each unresolved
-// instruction ... send binary to stdout
-
-void generate_code(int linum) {
-    char linbuf[10];
+void generate_code(const int line_num) {
+    char line_buffer[10];
     char instruction[18];
-    int line_number;
-    int pc, mask, sym_val, i, j, old_pc, diff;
-    char symbol[26];
+    int pc, sym_val, i, old_pc, diff;
 
-    line_number = old_pc = 0;
+    int line_number = old_pc = 0;
     rewind(p1);
 
-    sprintf(linbuf, "%5d:  ", line_number);
+    sprintf(line_buffer, "%5d:  ", line_number);
 
     while (fscanf(p1, "%d %s", &pc, instruction) != EOF) {
         if ((diff = pc - old_pc) > 1) {
-            for (j = 1; j < diff; j++) {
-                sprintf(linbuf, "%5d:  ", line_number++);
-                printf("%s1111111111111111\n", (linum ? linbuf : "\0"));
+            for (int j = 1; j < diff; j++) {
+                sprintf(line_buffer, "%5d:  ", line_number++);
+                printf("%s1111111111111111\n", line_num ? line_buffer : "\0");
             }
         }
-        sprintf(linbuf, "%5d:  ", line_number++);
+        sprintf(line_buffer, "%5d:  ", line_number++);
         old_pc = pc;
 
         if (instruction[0] == 'U') {
+            char symbol[26];
             fscanf(p1, "%s", symbol);
-            if ((sym_val = get_sym_val(symbol)) == -1) {
+            if ((sym_val = get_symbol_val(symbol)) == -1) {
                 fprintf(stderr, "no symbol in symbol table: %s\n", symbol);
                 exit(27);
             }
@@ -485,7 +556,7 @@ void generate_code(int linum) {
             }
             cstr_12[12] = '\0';
 
-            mask = 2048;
+            int mask = 2048;
             for (i = 0; i < 12; i++) {
                 if (sym_val & mask)
                     cstr_12[i] = '1';
@@ -494,9 +565,9 @@ void generate_code(int linum) {
             for (i = 0; i < 12; i++) {
                 instruction[i + 5] = cstr_12[i];
             }
-            printf("%s%s\n", (linum ? linbuf : "\0"), &instruction[1]);
+            printf("%s%s\n", (line_num ? line_buffer : "\0"), &instruction[1]);
         } else
-            printf("%s%s\n", (linum ? linbuf : "\0"), instruction);
+            printf("%s%s\n", (line_num ? line_buffer : "\0"), instruction);
     }
     fclose(p1);
 }
@@ -504,13 +575,9 @@ void generate_code(int linum) {
 
 // enter the value of a symbol into the symbol table
 // entry for that symbol when the value is discovered
-
-void update_sym_table(char *symbol) {
-    int i, j;
-    struct nament *element, *list;
-
-    for (list = symtab; list; list = list->next) {
-        if ((strcmp(list->name, symbol)) == 0) {
+void update_symbol_table(const char* symbol) {
+    for (struct nament* list = symbol_table; list; list = list->next) {
+        if (strcmp(list->name, symbol) == 0) {
             list->addr = pc;
             return;
         }
@@ -524,17 +591,18 @@ void update_sym_table(char *symbol) {
 // symbol into the table at the head of the
 // symbol table linked list
 
-void search_sym_table(char *symbol) {
+void search_sym_table(char* symbol) {
     int i, j;
     struct nament *element, *list;
 
-    for (list = symtab; list; list = list->next) {
-        if (strcmp(list->name, symbol) == 0)return;
+    for (list = symbol_table; list; list = list->next) {
+        if (strcmp(list->name, symbol) == 0)
+            return;
     }
     element = malloc(sizeof(struct nament));
     strcpy(element->name, symbol);
-    element->next = symtab;
-    symtab = element;
+    element->next = symbol_table;
+    symbol_table = element;
 }
 
 // following functions take a string form of a
@@ -551,11 +619,11 @@ void search_sym_table(char *symbol) {
 // complete an RSHIFT instruction
 //
 
-void str_6(char *cstr) {
+void str_6(char* cstr) {
     unsigned short str_val;
     int i, j, k, mask;
 
-    str_val = (unsigned short) atoi(cstr);
+    str_val = (unsigned short)atoi(cstr);
 
     for (i = 0; i < 6; i++) {
         cstr_6[i] = '0';
@@ -573,11 +641,11 @@ void str_6(char *cstr) {
 
 // for 8 bit INSP and DESP instructions
 
-void str_8(char *cstr) {
+void str_8(char* cstr) {
     unsigned short str_val;
     int i, j, k, mask;
 
-    str_val = (unsigned short) atoi(cstr);
+    str_val = (unsigned short)atoi(cstr);
 
     for (i = 0; i < 8; i++) {
         cstr_8[i] = '0';
@@ -596,11 +664,11 @@ void str_8(char *cstr) {
 // for 12 bit address and constant instructions like
 // LODD and LOCO
 
-void str_12(char *cstr) {
+void str_12(char* cstr) {
     unsigned short str_val;
     int i, j, k, mask;
 
-    str_val = (unsigned short) atoi(cstr);
+    str_val = (unsigned short)atoi(cstr);
 
     for (i = 0; i < 12; i++) {
         cstr_12[i] = '0';
@@ -619,11 +687,11 @@ void str_12(char *cstr) {
 // for full 16 bit strings representing 2s complement
 // integer values in memory
 
-void str_16(char *cstr) {
+void str_16(char* cstr) {
     short str_val;
     int i, j, k, mask;
 
-    str_val = (short) atoi(cstr);
+    str_val = (short)atoi(cstr);
 
     for (i = 0; i < 16; i++) {
         cstr_16[i] = '0';

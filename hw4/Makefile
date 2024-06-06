@@ -6,7 +6,7 @@ MC_COMPILER = ./mcc
 MC_SOURCE_FILE = microcode.mc
 MC_DAT = prom_new.dat
 
-all: $(MASM)
+all: $(MASM) $(MC_DAT)
 
 %.o: %.c
 	$(C_COMPILER) -c -g $<
@@ -21,4 +21,4 @@ $(MC_DAT): $(MC_SOURCE_FILE)
 	$(MC_COMPILER) $^ > $(MC_DAT)
 
 clean:
-	rm -f *.o $(MASM) $(LEXER)
+	rm -f *.o $(MASM) $(LEXER) $(MC_DAT)

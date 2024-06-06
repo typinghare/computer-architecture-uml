@@ -72,7 +72,7 @@ void generate_code(int);
 /**
  * @brief Updates the symbol table.
  */
-void update_symbol_table(char*);
+void update_symbol_table(const char*);
 
 /**
  *

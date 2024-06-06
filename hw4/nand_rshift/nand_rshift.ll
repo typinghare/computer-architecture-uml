@@ -26,11 +26,11 @@
 #define         HALT      24
 #define         INTEG     25
 #define         JUNK      26
-#define		LABEL 	  27
-#define		LOC	  28
-#define		STR	  29
-#define		NAND	  30
-#define		RSHIFT	  31
+#define		    LABEL 	  27
+#define		    LOC	      28
+#define		    STR	      29
+#define		    NAND	  30
+#define		    RSHIFT	  31
 %}
 
 %%

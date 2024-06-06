@@ -29,7 +29,7 @@ clean-c:
 	rm -f *.o $(C_PROGRAM)
 
 clean: clean-c
-	rm -f $(ASM_OBJECTS)
+	rm -f $(ASM_OBJECTS) ifib.obj rfib_unoptimized.obj
 
 run-unoptimized: rfib_unoptimized.asm
 	$(M_ASSEMBLER) < $^ > rfib_unoptimized.obj

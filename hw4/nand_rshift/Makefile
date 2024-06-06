@@ -9,3 +9,5 @@ lex.yy.c: nand_rshift.ll
 
 clean:
 	rm lex.yy.o lex.yy.c nand_rshift.o masm_nr
+
+all: masm_nr

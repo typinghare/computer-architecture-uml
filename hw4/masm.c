@@ -5,7 +5,7 @@
 #include <string.h>
 #include <unistd.h>
 #include <sys/types.h>
-// #include <sys/wait.h>
+#include <sys/wait.h>
 
 /**
  * Marco instructions. Three macro instructions are added: RSHIFT, MULT, and DIV.
@@ -68,7 +68,7 @@ int label_pc = -1;
 unsigned short pc = 0;
 FILE *p1;
 
-void str_6(char *);
+void str_6(const char *);
 
 void str_8(char *);
 
@@ -468,4 +468,116 @@ int main(const int argc, char *argv[]) {
     if (dump_tab)dump_table();
 
     return 0;
+}
+
+void str_6(const char *cstr) {
+    unsigned short str_val;
+    int i, mask;
+
+    str_val = (unsigned short) atoi(cstr);
+
+    for (i = 0; i < 6; i++) {
+        cstr_6[i] = '0';
+    }
+    cstr_6[6] = '\0';
+
+    mask = 32;
+    for (i = 0; i < 6; i++) {
+        if (str_val & mask)
+            cstr_6[i] = '1';
+        mask >>= 1;
+    }
+}
+
+// for 8 bit INSP and DESP instructions
+
+void str_8(char *cstr) {
+    unsigned short str_val;
+    int i, j, k, mask;
+
+    str_val = (unsigned short) atoi(cstr);
+
+    for (i = 0; i < 8; i++) {
+        cstr_8[i] = '0';
+    }
+    cstr_8[8] = '\0';
+
+    j = 0;
+    mask = 128;
+    for (i = 0; i < 8; i++) {
+        if (str_val & mask)
+            cstr_8[i] = '1';
+        mask >>= 1;
+    }
+}
+
+// for 12 bit address and constant instructions like
+// LODD and LOCO
+
+void str_12(char *cstr) {
+    unsigned short str_val;
+    int i, j, k, mask;
+
+    str_val = (unsigned short) atoi(cstr);
+
+    for (i = 0; i < 12; i++) {
+        cstr_12[i] = '0';
+    }
+    cstr_12[12] = '\0';
+
+    j = 0;
+    mask = 2048;
+    for (i = 0; i < 12; i++) {
+        if (str_val & mask)
+            cstr_12[i] = '1';
+        mask >>= 1;
+    }
+}
+
+// for full 16 bit strings representing 2s complement
+// integer values in memory
+
+void str_16(char *cstr) {
+    short str_val;
+    int i, j, k, mask;
+
+    str_val = (short) atoi(cstr);
+
+    for (i = 0; i < 16; i++) {
+        cstr_16[i] = '0';
+    }
+    cstr_16[16] = '\0';
+
+    mask = (1024 * 32);
+    for (i = 0; i < 16; i++) {
+        if (str_val & mask)
+            cstr_16[i] = '1';
+        mask >>= 1;
+    }
+}
+
+// to take an actual short integer (in C binary)
+// and convert it into a string of 16 bits of
+// 1 and 0 characters with a NULL byte in position
+// 17 of the array ... above we're converting decimal
+// strings to binary strings, but here we're converting
+// a real C short to a corresponding 16 bit binary string
+
+void bstr_16(unsigned short bin_num) {
+    short str_val;
+    int i, j, k, mask;
+
+    str_val = bin_num;
+
+    for (i = 0; i < 16; i++) {
+        binstr_16[i] = '0';
+    }
+    binstr_16[16] = '\0';
+
+    mask = (1024 * 32);
+    for (i = 0; i < 16; i++) {
+        if (str_val & mask)
+            binstr_16[i] = '1';
+        mask >>= 1;
+    }
 }

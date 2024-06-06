@@ -59,7 +59,7 @@ char binstr_16[17];
 
 int label_pc = -1;
 
-void str_6(char *);
+void str_6(const char *);
 
 void str_8(char *);
 
@@ -545,7 +545,7 @@ void search_sym_table(char *symbol) {
 // complete an RSHIFT instruction
 //
 
-void str_6(char *cstr) {
+void str_6(const char *cstr) {
     unsigned short str_val;
     int i, j, k, mask;
 

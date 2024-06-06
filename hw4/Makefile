@@ -3,6 +3,8 @@ MASM = masm
 FLEX_COMPILER = flex
 LEXER = lex.yy.c
 
+all: $(MASM)
+
 %.o: %.c
 	$(C_COMPILER) -c -g $<
 
@@ -12,7 +14,5 @@ $(LEXER): lex.yy.ll
 $(MASM): masm.o lex.yy.o
 	$(C_COMPILER) -o $@ $^
 
-all: $(MASM)
-
 clean:
-	rm *.o $(MASM) $(LEXER)
+	rm -f *.o $(MASM) $(LEXER)

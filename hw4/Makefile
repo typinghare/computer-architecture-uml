@@ -12,5 +12,7 @@ $(LEXER): lex.yy.ll
 $(MASM): masm.o lex.yy.o
 	$(C_COMPILER) -o $@ $^
 
+all: $(MASM)
+
 clean:
 	rm *.o $(MASM) $(LEXER)

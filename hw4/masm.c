@@ -57,11 +57,51 @@ int label_pc = -1;
 unsigned short pc = 0;
 FILE* p1;
 
-void str_6(const char*);
-void str_8(const char*);
-void str_12(const char*);
-void str_16(const char*);
-void bstr_16(unsigned short);
+/**
+ * @brief Converts a string form of a decimal number into a string of
+ * corresponding binary sequence. The result will be saved to the global array
+ * cstr_6[7] seen at the beginning of this file.
+ * @param cstr The string form of a decimal number to be converted.
+ * @example
+ *      str_6("23") => "0010111"
+ */
+void str_6(const char* cstr);
+
+/**
+ * @brief Converts a string form of a decimal number into a string of
+ * corresponding binary sequence. The result will be saved to the global array
+ * cstr_8[9] seen at the beginning of this file.
+ * @param cstr The string form of a decimal number to be converted.
+ * @example
+ *      str_6("23") => "0010111"
+ */
+void str_8(const char* cstr);
+
+/**
+ * @brief Converts a string form of a decimal number into a string of
+ * corresponding binary sequence. The result will be saved to the global array
+ * cstr_12[13] seen at the beginning of this file.
+ * @param cstr The string form of a decimal number to be converted.
+ * @example
+ *      str_6("23") => "0010111"
+ */
+void str_12(const char* cstr);
+
+/**
+ * @brief Converts a string form of a decimal number into a string of
+ * corresponding binary sequence. The result will be saved to the global array
+ * cstr_16[17] seen at the beginning of this file.
+ * @param cstr The string form of a decimal number to be converted.
+ * @example
+ *      str_6("23") => "0010111"
+ */
+void str_16(const char* cstr);
+
+/**
+ * @brief Converts an actual short integer into a string of 16 bits will a NULL
+ * type in position 17 of the array.
+ */
+void bstr_16(unsigned short bin_num);
 
 /**
  * @brief Rewinds the temporary file and complete each unresolved instruction,
@@ -440,7 +480,6 @@ int main(const int argc, char* argv[]) {
 
             case LABEL:
                 if (label_pc == pc) {
-                    /* for < lbx: lby: >   */
                     fprintf(p1, "%d  U0000000000000000    %s\n", pc, yytext);
                     break;
                 }
@@ -490,9 +529,9 @@ int main(const int argc, char* argv[]) {
             default:
                 fprintf(stderr, "Default case, unrecoverable error\n");
                 exit(26);
-        }  // end while
+        }
         pc++;
-    }  // end switch
+    }
 
     generate_code(line_number);
 
@@ -596,20 +635,6 @@ void search_symbol_table(const char* symbol) {
     symbol_table = element;
 }
 
-// following functions take a string form of a
-// decimal number and convert it into a string of
-// corresponding 1 or 0 bits ... for example, if
-// str_6("23") was called, this function would take
-// the string value "23" and convert it into the
-// string value in 6 bits of "0010111" ... this string
-// of 7 characters would be left in the global array
-// char cstr_6[7];  seen at the beginning of this file.
-// There is a similar function and corresponding global
-// array for all the bit strings we need to complete an
-// instruction, including the 6 bit string shown here to
-// complete an RSHIFT instruction
-//
-
 void str_6(const char* cstr) {
     const unsigned short str_val = atoi(cstr);
 
@@ -625,8 +650,6 @@ void str_6(const char* cstr) {
         mask >>= 1;
     }
 }
-
-// for 8 bit INSP and DESP instructions
 
 void str_8(const char* cstr) {
     const unsigned short str_val = atoi(cstr);
@@ -644,9 +667,6 @@ void str_8(const char* cstr) {
     }
 }
 
-// for 12 bit address and constant instructions like
-// LODD and LOCO
-
 void str_12(const char* cstr) {
     const unsigned short str_val = atoi(cstr);
 
@@ -663,9 +683,6 @@ void str_12(const char* cstr) {
     }
 }
 
-// for full 16 bit strings representing 2s complement
-// integer values in memory
-
 void str_16(const char* cstr) {
     const short str_val = atoi(cstr);
 
@@ -681,13 +698,6 @@ void str_16(const char* cstr) {
         mask >>= 1;
     }
 }
-
-// to take an actual short integer (in C binary)
-// and convert it into a string of 16 bits of
-// 1 and 0 characters with a NULL byte in position
-// 17 of the array ... above we're converting decimal
-// strings to binary strings, but here we're converting
-// a real C short to a corresponding 16 bit binary string
 
 void bstr_16(const unsigned short bin_num) {
     const short str_val = bin_num;

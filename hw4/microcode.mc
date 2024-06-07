@@ -74,7 +74,7 @@
 73:alu := tir; if n then goto 76;
 74:a := band(ir, smask); 			            { 1111 110 0 = INSP }
 75:sp := sp + a; goto 0;
-76:tir := tir + tir; if n then goto 80;         { tir = 1??... }
+76:tir := tir + tir; if n then goto 80;
 77:a := band(ir, smask); 			            { 1111 111 0 = DESP }
 78:a := inv(a);
 79:a := a + 1; goto 75;
@@ -93,7 +93,7 @@
 92:c := 0;
 93:b := b + (-1); if n then goto 95;
 94:c := c + a; goto 93;
-95:mar := b; wr;
+95:mbr := b; wr;                                { write the result to memory }
 96:ac := 0; goto 0;
 97:a := lshift(1);				                { 1111 1111 01 = RSHIFT }
 98:a := lshift(a + 1);

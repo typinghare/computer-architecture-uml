@@ -48,8 +48,8 @@
 /**
  * Global constants.
  */
-char cstr_6[7];
-char cstr_8[9];
+char cstr_6[7] = "000000\0";
+char cstr_8[9] = "00000000\0";
 char cstr_12[13];
 char cstr_16[17];
 char binstr_16[17];
@@ -635,22 +635,6 @@ void search_symbol_table(const char* symbol) {
     symbol_table = element;
 }
 
-// void str_6(const char* cstr) {
-//     const unsigned short str_val = atoi(cstr);
-//
-//     for (int i = 0; i < 6; i++) {
-//         cstr_6[i] = '0';
-//     }
-//     cstr_6[6] = '\0';
-//
-//     int mask = 32;
-//     for (int i = 0; i < 6; i++) {
-//         if (str_val & mask)
-//             cstr_6[i] = '1';
-//         mask >>= 1;
-//     }
-// }
-
 void str_6(const char* cstr) {
     const unsigned short str_val = atoi(cstr);
     int mask = 32;
@@ -661,17 +645,9 @@ void str_6(const char* cstr) {
 
 void str_8(const char* cstr) {
     const unsigned short str_val = atoi(cstr);
-
-    for (int i = 0; i < 8; i++) {
-        cstr_8[i] = '0';
-    }
-    cstr_8[8] = '\0';
-
     int mask = 128;
-    for (int i = 0; i < 8; i++) {
-        if (str_val & mask)
-            cstr_8[i] = '1';
-        mask >>= 1;
+    for (int i = 0; i < 8; i++, mask >>= 1) {
+        cstr_8[i] = str_val & mask ? '1' : '0';
     }
 }
 

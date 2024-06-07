@@ -1,4 +1,4 @@
-0:   mar := pc; rd;                             { main loop  }
+0:   mar := pc; rd;                             { main loop }
 1:   pc := 1 + pc; rd;                          { increment pc }
 2:   ir := mbr; if n then goto 28;              { save, decode mbr }
 3:   tir := lshift(ir + ir); if n then goto 19;
@@ -85,7 +85,7 @@
 84:  a := lshift(a + 1);
 85:  a := lshift(a + 1);
 86:  a := lshift(a + 1);
-87:  a := a + 1;
+87:  a := a + 1;                                { a = 11 1111 }
 88:  b := band(ir, a);                          { b stores the argument }
 89:  mar := sp; rd;
 90:  rd;                                        { mbr stores m[sp] }
@@ -103,7 +103,7 @@
 102: alu := d; if z then goto 105;              { overflow: goto ac := 1 }
 103: mbr := c; wr;                              { write the result to m[sp] }
 104: ac := 0; goto 0;
-105: ac := 1; goto 0;
+105: ac := -1; goto 0;                          { END: MULT }
 106: a := lshift(1);                            { 1111 1111 01 = RSHIFT }
 107: a := lshift(a + 1);
 108: a := lshift(a + 1);
@@ -111,6 +111,23 @@
 110: b := band(ir, a);
 111: b := b + (-1); if n then goto 0;
 112: ac := rshift(ac); goto 111;
-113: tir := tir + tir; if n then goto 115;      { 1111 1111 11 = HALT }
-114: alu := a;                                  { 1111 1111 10 = DIV }
-115: rd; wr;                                    { 1111 1111 11 = HALT }
+113: tir := tir + tir; if n then goto 132;      { 1111 1111 11 = HALT }
+114: mar := sp; a := sp + 1; rd;                { 1111 1111 10 = DIV }
+115: rd;
+116: mar := a; b := mbr; rd;                    { b is the dividend }
+117: rd;
+118: a := mbr;                                  { a is the divisor }
+119: alu := a; if z then goto 131;              { check if a is 0 }
+120: if n then goto 122;
+121: c := 1; goto 125;
+122: c := -1;                                   { c stores divisor's sign }
+123: a := inv(a);
+124: a := a + 1;                                { a = |divisor| }
+125: alu := b; if n then goto 127;
+126: d := 1; goto 130;
+127: d := -1;                                   { d stores dividend's sign }
+128: b := inv(b);
+129: b := b + 1;                                { b = |dividend| }
+130: ac := 0; goto 0;                           { legal case }
+131: ac := -1; goto 0;                          { illegal case (divisor is 0) }
+132: rd; wr;                                    { 1111 1111 11 = HALT }

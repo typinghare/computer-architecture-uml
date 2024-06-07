@@ -111,23 +111,30 @@
 110: b := band(ir, a);
 111: b := b + (-1); if n then goto 0;
 112: ac := rshift(ac); goto 111;
-113: tir := tir + tir; if n then goto 132;      { 1111 1111 11 = HALT }
+113: tir := tir + tir; if n then goto 139;      { 1111 1111 11 = HALT }
 114: mar := sp; a := sp + 1; rd;                { 1111 1111 10 = DIV }
 115: rd;
 116: mar := a; b := mbr; rd;                    { b is the dividend }
 117: rd;
 118: a := mbr;                                  { a is the divisor }
-119: alu := a; if z then goto 131;              { check if a is 0 }
-120: alu := a; if n then goto 122;
-121: c := 1; goto 125;
-122: c := -1;                                   { c stores divisor's sign }
-123: a := inv(a);
-124: a := a + 1;                                { a = |divisor| }
-125: alu := b; if n then goto 127;
-126: d := 1; goto 130;
-127: d := -1;                                   { d stores dividend's sign }
-128: b := inv(b);
-129: b := b + 1;                                { b = |dividend| }
-130: ac := 0; goto 0;                           { legal case }
-131: ac := -1; goto 0;                          { illegal case }
-132: rd; wr;                                    { 1111 1111 11 = HALT }
+119: e := 0;                                    { e: remainder }
+120: f := 0;                                    { f: quotient }
+121: alu := a; if z then goto 133;              { check if a is 0, illegal }
+122: alu := a; if n then goto 124;
+123: c := 1; goto 127;
+124: c := -1;                                   { c stores divisor's sign }
+125: a := inv(a);
+126: a := a + 1;                                { a = |divisor| }
+127: alu := b; if n then goto 129;
+128: d := 1; goto 132;
+129: d := -1;                                   { d stores dividend's sign }
+130: b := inv(b);
+131: b := b + 1;                                { b = |dividend| }
+132: ac := 0; goto 0;                           { legal case }
+133: ac := -1;                                  { illegal case }
+134: a := sp + (-1);
+135: mar := a; mbr := e; wr;                    { push the remainder to stack }
+136: a := a + (-1);
+137: mar := a; mbr := f; wr;                    { push the quotient to stack }
+138: goto 0;
+139: rd; wr;                                    { 1111 1111 11 = HALT }

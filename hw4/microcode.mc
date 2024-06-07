@@ -91,13 +91,13 @@
 90:rd;                                          { mbr stores m[sp] }
 91:a := mbr;                                    { a stores m[sp] }
 92:c := 0;                                      { c is the result }
-93:alu := a; if z then goto 103;                { if a == 0 }
-94:if n then goto 96;
+93:alu := b; if z then goto 103;                { if b == 0, write m[sp] = 0 }
+94:alu := a; if n then goto 96;                 { start: d = a < 0 ? -1 : 1}
 95:d := 1; goto 97;
-96:d := -1;                                     { d = a < 0 ? -1 : 1 }
-97:b := b + (-1); if n then goto 99;
+96:d := -1;                                     { end: d = a < 0 ? -1 : 1 }
+97:b := b + (-1); if n then goto 99;            { start: addition }
 98:c := c + a; goto 97;
-99:alu := c; if n then goto 101;                { check the result }
+99:alu := c; if n then goto 101;                { check the result's sign }
 100:d := d + 1; goto 102;
 101:d:= d + (-1);
 102:alu := c; if z then goto 105;               { goto ac := 1 }

@@ -92,8 +92,8 @@
 91:a := mbr;                                    { a stores m[sp] }
 92:c := 0;
 93:b := b + (-1); if n then goto 95;
-94:c := c + a; goto 93;
-95:mbr := b; wr;                                { write the result to memory }
+94:c := c + a; goto 93;                         { c is the result }
+95:mbr := c; wr;                                { write the result to memory }
 96:ac := 0; goto 0;
 97:a := lshift(1);				                { 1111 1111 01 = RSHIFT }
 98:a := lshift(a + 1);

@@ -10,9 +10,9 @@ MC_SOURCE_FILE = microcode.mc
 MC_PROM_DAT = prom.dat
 
 # Test object files
-RSHIFT_TEST_OBJ = rshift_test.obj
-MULT_TEST_OBJ = mult_test.obj
-DIV_TEST_OBJ = div_test.obj
+RSHIFT_TEST_OBJ = rshift.test.obj
+MULT_TEST_OBJ = mult.test.obj
+DIV_TEST_OBJ = div.test.obj
 
 # Mic-1
 MIC1 = ./mic1
@@ -33,17 +33,17 @@ $(MASM): masm.o lex.yy.o
 $(MC_PROM_DAT): $(MC_SOURCE_FILE)
 	$(MC_COMPILER) $^ > $(MC_PROM_DAT)
 
-%.obj: %.asm
-	./$(MASM) < $^ > $@
+%.obj: %.asm $(MASM)
+	./$(MASM) < $< > $@
 
-run-rshift-test: $(RSHIFT_TEST_OBJ)
-	./$(MIC1) $(MC_PROM_DAT) $^ $(STARTING_PC) $(STARTING_SP)
+test-rshift: $(MC_PROM_DAT) $(RSHIFT_TEST_OBJ)
+	./$(MIC1) $^ $(STARTING_PC) $(STARTING_SP)
 
-run-mult-test: $(MULT_TEST_OBJ)
-	./$(MIC1) $(MC_PROM_DAT) $^ $(STARTING_PC) $(STARTING_SP)
+test-mult: $(MC_PROM_DAT) $(MULT_TEST_OBJ)
+	./$(MIC1) $^ $(STARTING_PC) $(STARTING_SP)
 
-run-div-test: $(DIV_TEST_OBJ)
-	./$(MIC1) $(MC_PROM_DAT) $^ $(STARTING_PC) $(STARTING_SP)
+test-div: $(MC_PROM_DAT) $(DIV_TEST_OBJ)
+	./$(MIC1) $^ $(STARTING_PC) $(STARTING_SP)
 
 clean:
 	rm -f *.o $(MASM) $(LEXER) $(MC_PROM_DAT) $(RSHIFT_TEST_OBJ) $(MULT_TEST_OBJ) $(DIV_TEST_OBJ)

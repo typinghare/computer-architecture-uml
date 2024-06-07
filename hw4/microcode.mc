@@ -118,7 +118,7 @@
 117: rd;
 118: a := mbr;                                  { a is the divisor }
 119: alu := a; if z then goto 131;              { check if a is 0 }
-120: if n then goto 122;
+120: alu := a; if n then goto 122;
 121: c := 1; goto 125;
 122: c := -1;                                   { c stores divisor's sign }
 123: a := inv(a);
@@ -129,5 +129,5 @@
 128: b := inv(b);
 129: b := b + 1;                                { b = |dividend| }
 130: ac := 0; goto 0;                           { legal case }
-131: ac := -1; goto 0;                          { illegal case (divisor is 0) }
+131: ac := -1; goto 0;                          { illegal case }
 132: rd; wr;                                    { 1111 1111 11 = HALT }

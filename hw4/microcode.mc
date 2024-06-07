@@ -79,7 +79,7 @@
 78:a := inv(a);
 79:a := a + 1; goto 75;
 80:tir := tir + tir; if n then goto 104;		{ 1111 1111 1d = HALT }
-81:alu := tir + tir; if n then goto 96;
+81:alu := tir + tir; if n then goto 97;
 82:a := lshift(1);			                    { 1111 1111 00 = MULT }
 83:a := lshift(a + 1);
 84:a := lshift(a + 1);

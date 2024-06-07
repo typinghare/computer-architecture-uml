@@ -78,28 +78,28 @@
 77:a := band(ir, smask); 			            { 1111 111 0 = DESP }
 78:a := inv(a);
 79:a := a + 1; goto 75;
-80:tir := tir + tir; if n then goto 90;		    { 1111 1111 1d = HALT }
-81:alu := tir + tir; if n then goto ?;          { tir = mmm mmm ... }
+80:tir := tir + tir; if n then goto 104;		{ 1111 1111 1d = HALT }
+81:alu := tir + tir; if n then goto 96;
 82:a := lshift(1);			                    { 1111 1111 00 = MULT }
 83:a := lshift(a + 1);
 84:a := lshift(a + 1);
 85:a := lshift(a + 1);
 86:a := lshift(a + 1);
 87:a := a + 1;
-88:b := band(ir, a);
+88:b := band(ir, a);                            { b stores the argument }
 89:mar := sp; rd;
-90:rd;
-91:c := b;
-92:b := b + (-1); if n then goto 94;
-93:b := b + c; goto 92;
-94:mar := b; wr;
-95:ac := 0; goto 0;
-96:a := lshift(1);				                { 1111 1111 01 = RSHIFT }
-97:a := lshift(a + 1);
+90:rd;                                          { mbr stores m[sp] }
+91:a := mbr;                                    { a stores m[sp] }
+92:c := 0;
+93:b := b + (-1); if n then goto 95;
+94:c := c + a; goto 93;
+95:mar := b; wr;
+96:ac := 0; goto 0;
+97:a := lshift(1);				                { 1111 1111 01 = RSHIFT }
 98:a := lshift(a + 1);
-99:a := a + 1;
-100:b := band(ir, a);
-101:b := b + (-1); if n then goto 103;
-102:ac := rshift(ac); goto 101;
-103:goto 0;
-104:rd; wr; 					                { 1111 1111 1x = HALT }
+99:a := lshift(a + 1);
+100:a := a + 1;
+101:b := band(ir, a);
+102:b := b + (-1); if n then goto 0;
+103:ac := rshift(ac); goto 102;
+105:rd; wr; 					                { 1111 1111 1x = HALT }

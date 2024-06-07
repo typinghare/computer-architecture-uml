@@ -78,7 +78,7 @@
 77:a := band(ir, smask); 			            { 1111 111 0 = DESP }
 78:a := inv(a);
 79:a := a + 1; goto 75;
-80:tir := tir + tir; if n then goto 113;		{ 1111 1111 1d = HALT }
+80:tir := tir + tir; if n then goto 113;		{ 1111 1111 1x }
 81:alu := tir + tir; if n then goto 106;        { to RSHIFT }
 82:a := lshift(1);			                    { 1111 1111 00 = MULT }
 83:a := lshift(a + 1);
@@ -111,4 +111,6 @@
 110:b := band(ir, a);
 111:b := b + (-1); if n then goto 0;
 112:ac := rshift(ac); goto 111;
-113:rd; wr; 					                { 1111 1111 1x = HALT }
+113:tir := tir + tir; if n then goto 115;       { 1111 1111 11 = HALT }
+114:alu := a;                                   { 1111 1111 10 = DIV }
+115:rd; wr; 					                { 1111 1111 11 = HALT }

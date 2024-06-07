@@ -100,7 +100,7 @@
 99:alu := c; if n then goto 101;                { check the result's sign }
 100:d := d + 1; goto 102;
 101:d:= d + (-1);
-102:alu := c; if z then goto 105;               { goto ac := 1 }
+102:alu := d; if z then goto 105;               { overflow: goto ac := 1 }
 103:mbr := c; wr;                               { write the result to m[sp] }
 104:ac := 0; goto 0;
 105:ac := 1; goto 0;

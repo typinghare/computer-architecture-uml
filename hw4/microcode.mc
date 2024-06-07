@@ -78,8 +78,8 @@
 77:a := band(ir, smask); 			            { 1111 111 0 = DESP }
 78:a := inv(a);
 79:a := a + 1; goto 75;
-80:tir := tir + tir; if n then goto 112;		{ 1111 1111 1d = HALT }
-81:alu := tir + tir; if n then goto 105;        { to RSHIFT }
+80:tir := tir + tir; if n then goto 113;		{ 1111 1111 1d = HALT }
+81:alu := tir + tir; if n then goto 106;        { to RSHIFT }
 82:a := lshift(1);			                    { 1111 1111 00 = MULT }
 83:a := lshift(a + 1);
 84:a := lshift(a + 1);
@@ -90,24 +90,25 @@
 89:mar := sp; rd;
 90:rd;                                          { mbr stores m[sp] }
 91:a := mbr;                                    { a stores m[sp] }
-92:alu := a; if n goto 94;
-93:d := 1; goto 95;
-94:d := -1; goto 1;                             { d = a < 0 ? -1 : 1 }
-95:c := 0;                                      { c is the result }
-96:b := b + (-1); if n then goto 98;
-97:c := c + a; goto 93;
-98:alu := c; if n then goto 100;
-99:d := d + 1; goto 101;
-100:d:= d + (-1);
-101:alu := c; if z then goto 104;
-102:mbr := c; wr;                               { write the result to m[sp] }
-103:ac := 0; goto 0;
-104:ac := 1; goto 0;
-105:a := lshift(1);				                { 1111 1111 01 = RSHIFT }
-106:a := lshift(a + 1);
+92:c := 0;                                      { c is the result }
+93:alu := a; if z then goto 103;                { if a == 0 }
+94:if n then goto 96;
+95:d := 1; goto 97;
+96:d := -1;                                     { d = a < 0 ? -1 : 1 }
+97:b := b + (-1); if n then goto 99;
+98:c := c + a; goto 97;
+99:alu := c; if n then goto 101;                { check the result }
+100:d := d + 1; goto 102;
+101:d:= d + (-1);
+102:alu := c; if z then goto 105;               { goto ac := 1 }
+103:mbr := c; wr;                               { write the result to m[sp] }
+104:ac := 0; goto 0;
+105:ac := 1; goto 0;
+106:a := lshift(1);				                { 1111 1111 01 = RSHIFT }
 107:a := lshift(a + 1);
-108:a := a + 1;
-109:b := band(ir, a);
-110:b := b + (-1); if n then goto 0;
-111:ac := rshift(ac); goto 102;
-112:rd; wr; 					                { 1111 1111 1x = HALT }
+108:a := lshift(a + 1);
+109:a := a + 1;
+110:b := band(ir, a);
+111:b := b + (-1); if n then goto 0;
+112:ac := rshift(ac); goto 111;
+113:rd; wr; 					                { 1111 1111 1x = HALT }

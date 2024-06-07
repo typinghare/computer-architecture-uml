@@ -78,8 +78,8 @@
 77:a := band(ir, smask); 			            { 1111 111 0 = DESP }
 78:a := inv(a);
 79:a := a + 1; goto 75;
-80:tir := tir + tir; if n then goto 104;		{ 1111 1111 1d = HALT }
-81:alu := tir + tir; if n then goto 97;
+80:tir := tir + tir; if n then goto 112;		{ 1111 1111 1d = HALT }
+81:alu := tir + tir; if n then goto 105;        { to RSHIFT }
 82:a := lshift(1);			                    { 1111 1111 00 = MULT }
 83:a := lshift(a + 1);
 84:a := lshift(a + 1);
@@ -90,16 +90,24 @@
 89:mar := sp; rd;
 90:rd;                                          { mbr stores m[sp] }
 91:a := mbr;                                    { a stores m[sp] }
-92:c := 0;
-93:b := b + (-1); if n then goto 95;
-94:c := c + a; goto 93;                         { c is the result }
-95:mbr := c; wr;                                { write the result to memory }
-96:ac := 0; goto 0;
-97:a := lshift(1);				                { 1111 1111 01 = RSHIFT }
-98:a := lshift(a + 1);
-99:a := lshift(a + 1);
-100:a := a + 1;
-101:b := band(ir, a);
-102:b := b + (-1); if n then goto 0;
-103:ac := rshift(ac); goto 102;
-105:rd; wr; 					                { 1111 1111 1x = HALT }
+92:alu := a; if n goto 94;
+93:d := 1; goto 95;
+94:d := -1; goto 1;                             { d = a < 0 ? -1 : 1 }
+95:c := 0;                                      { c is the result }
+96:b := b + (-1); if n then goto 98;
+97:c := c + a; goto 93;
+98:alu := c; if n then goto 100;
+99:d := d + 1; goto 101;
+100:d:= d + (-1);
+101:alu := c; if z then goto 104;
+102:mbr := c; wr;                               { write the result to m[sp] }
+103:ac := 0; goto 0;
+104:ac := 1; goto 0;
+105:a := lshift(1);				                { 1111 1111 01 = RSHIFT }
+106:a := lshift(a + 1);
+107:a := lshift(a + 1);
+108:a := a + 1;
+109:b := band(ir, a);
+110:b := b + (-1); if n then goto 0;
+111:ac := rshift(ac); goto 102;
+112:rd; wr; 					                { 1111 1111 1x = HALT }

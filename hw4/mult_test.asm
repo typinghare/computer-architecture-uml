@@ -17,7 +17,7 @@ start:      LODD d1:    ;
             LODD d5:    ;
             PUSH        ;
             MULT 49     ;
-            HALT        ; ac = 1, m[sp] = don't care
+            HALT        ; ac = 1, m[sp] = don't care (-30501)
             LODD d6:    ;
             PUSH        ;
             MULT 55     ;

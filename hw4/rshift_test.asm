@@ -1,19 +1,18 @@
-; test for the new RSHIFT assembly instruction
-start:      LODD d1:
-	        RSHIFT 0
-	        HALT         ; AC has shifted value
-	        LODD d2:
-            RSHIFT 3
-            HALT         ; AC has shifted value
-            LODD d3:
-            RSHIFT 7
-            HALT         ; AC has shifted value
-            LODD d4:
-            RSHIFT 15
-            HALT         ; AC has shifted value
-            LODD d5:
-            RSHIFT 4
-            HALT         ; AC has shifted value
+start:      LODD d1:    ;
+	        RSHIFT 0    ;
+	        HALT        ; ac = 3451
+	        LODD d2:    ;
+            RSHIFT 3    ;
+            HALT        ; ac = 1024
+            LODD d3:    ;
+            RSHIFT 7    ;
+            HALT        ; ac = 448
+            LODD d4:    ;
+            RSHIFT 15   ;
+            HALT        ; ac = 1
+            LODD d5:    ;
+            RSHIFT 4    ;
+            HALT        ; ac = 59
 .LOC 20
 d1:         3451
 d2:         8192

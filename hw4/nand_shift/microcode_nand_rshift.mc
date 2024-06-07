@@ -80,6 +80,7 @@
 79:a := a + 1; goto 75; 			
 80:tir := tir + tir; if n then goto 97;		{ 1111 1111 1x = HALT }
 81:alu := tir + tir; if n then goto 89;         { 1111 1111 01 = RSHIFT }
+
 82:mar := sp; a := sp + 1; rd;			{ 1111 1111 00 = NAND }
 83:rd;
 84:mar := a; b := mbr; rd;
@@ -87,6 +88,7 @@
 86:c := mbr;
 87:a := band(b, c);
 88:ac := inv(a); goto 0;
+
 89:a := lshift(1);				{ 1111 1111 01 = RSHIFT }
 90:a := lshift(a + 1);
 91:a := lshift(a + 1);

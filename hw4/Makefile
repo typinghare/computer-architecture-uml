@@ -15,7 +15,7 @@ MULT_TEST_OBJ = mult.test.obj
 DIV_TEST_OBJ = div.test.obj
 
 # Mic-1
-MIC1 = ./mic1
+MIC1 = mic1
 STARTING_PC = 0
 STARTING_SP = 4000
 

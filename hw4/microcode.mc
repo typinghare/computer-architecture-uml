@@ -141,7 +141,7 @@
 140: f := f + (-1);
 141: alu := d; if n then goto 144;              { d < 0 }
 142: alu := c; if n then goto 148;              { c < 0 }
-143: goto 154;
+143: goto 152;
 144: f := f + 1;                                { d is negative }
 145: e := inv(e);
 146: e := e + 1;

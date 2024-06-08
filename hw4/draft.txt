@@ -1,0 +1,45 @@
+<Registers>
+a: divisor => |divisor|
+b: dividend => |dividend|
+c: divisor's sign
+d: dividend's sign
+e: remainder
+f: quotient
+
+<Cases>
+[1] b / a
+[2] -b / a
+[3] b / -a
+[4] -b / -a
+
+b / a = f ... e
+b = a * f + e
+
+[1] b = a * f + e
+Nothing has be changed.
+
+[2] -b = - a * f - e => -b = -a * (f + 1) + (a - e)
+f++; e <- b - e;
+
+[3] b = -a * (-f) + e
+Negate the quotient f.
+
+[4] -b = -(-a * (-f) + e) => -b = -a * f - e => -b = -a * (f + 1) + (a - e)
+The same as case [2].
+
+<Conclusion>
+if b < 0:   // [2] and [4]
+    f++;
+    e <- a - e;
+else if a < 0:  // [3]
+    f = -f
+
+<Microcode implementation>
+if d is negative:
+    f := f + 1;
+    e := ~e;
+    e := e + 1;
+    e := a + e;
+else if c is negative:
+    f := ~f;
+    f := f + 1;

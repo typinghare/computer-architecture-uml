@@ -15,13 +15,13 @@ start:      LODD div1:  ;
             LODD dnd3:  ;
             PUSH        ;
             DIV         ; 3. ac = 0, [9, 513] (-8199 = -16 * 513 + 9)
-            HALT        ; [-16, -8199, 9, 513] !
+            HALT        ; [-16, -8199, 9, 513] ! [7, 512]
             LODD div4:  ;
             PUSH        ;
             LODD dnd4:  ;
             PUSH        ;
             DIV         ; 4. ac = 0, [255, -95] (24575 = -256 * -95 + 255)
-            HALT        ; [-256, 24575, 255, -95] !
+            HALT        ; [-256, 24575, 255, -95] ! [255, 95]
             LODD div5:  ;
             PUSH        ;
             LODD dnd5:  ;

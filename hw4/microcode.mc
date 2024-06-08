@@ -111,7 +111,7 @@
 110: b := band(ir, a);
 111: b := b + (-1); if n then goto 0;
 112: ac := rshift(ac); goto 111;
-113: tir := tir + tir; if n then goto 149;      { 1111 1111 11 = HALT }
+113: tir := tir + tir; if n then goto 158;      { 1111 1111 11 = HALT }
 114: mar := sp; a := sp + 1; rd;                { 1111 1111 10 = DIV }
 115: rd;
 116: mar := a; b := mbr; rd;                    { b is the dividend }
@@ -119,7 +119,7 @@
 118: a := mbr;                                  { a is the divisor }
 119: e := 0;                                    { e: remainder }
 120: f := 0;                                    { f: quotient }
-121: alu := a; if z then goto 142;              { check if a is 0, illegal }
+121: alu := a; if z then goto 151;              { check if a is 0, illegal }
 122: alu := a; if n then goto 127;              { start: set c; a = -|a| }
 123: c := 1;
 124: a := inv(a);
@@ -131,7 +131,7 @@
 130: b := inv(b);
 131: b := b + 1;                                { b = |dividend| }
 132: ac := 0;                                   { legal case }
-133: alu := b; if z then goto 144;              { no remainder  }
+133: alu := b; if z then goto 153;              { no remainder, goto write }
 134: alu := b; if n then goto 137;              { remainder is negative }
 135: b := b + a;                                { b - |divisor| }
 136: f := f + 1; goto 133;
@@ -139,12 +139,21 @@
 138: a := a + 1;
 139: e := a + b;                                { remainder = b + |a| }
 140: f := f + (-1);
-141: goto 144;                                  { skip the illegal case }
-142: ac := -1;                                  { illegal case }
-143: e := -1;
-144: sp := sp + (-1);                           { start: write to memory }
-145: mar := sp; mbr := e; wr;                   { push the remainder to stack }
-146: sp := sp + (-1);
-147: mar := sp; mbr := f; wr;                   { push the quotient to stack }
-148: goto 0;
-149: rd; wr;                                    { 1111 1111 11 = HALT }
+141: alu := d; if n then goto 144;              { d < 0 }
+142: alu := c; if n then goto 148;              { c < 0 }
+143: goto 153;
+144: f := f + 1;                                { d is negative }
+145: e := inv(e);
+146: e := e + 1;
+147: e := a + e;
+148: f := inv(f);                               { c is negative }
+149: f := f + 1;
+150: goto 153;                                  { skip the illegal case }
+151: ac := -1;                                  { illegal case }
+152: e := -1;
+153: sp := sp + (-1);                           { start: write to memory }
+154: mar := sp; mbr := e; wr;                   { push the remainder to stack }
+155: sp := sp + (-1);
+156: mar := sp; mbr := f; wr;                   { push the quotient to stack }
+157: goto 0;
+158: rd; wr;                                    { 1111 1111 11 = HALT }

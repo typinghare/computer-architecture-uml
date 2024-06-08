@@ -120,11 +120,11 @@
 119: e := 0;                                    { e: remainder }
 120: f := 0;                                    { f: quotient }
 121: alu := a; if z then goto 152;              { check if a is 0, illegal }
-122: alu := a; if n then goto 127;              { start: set c; a = -|a| }
+122: alu := a; if n then goto 126;              { start: set c; a = -|a| }
 123: c := 1;
 124: a := inv(a);
-125: a := a + 1;                                { a = -|divisor| }
-124: c := -1;                                   { c stores divisor's sign }
+125: a := a + 1; goto 127;                      { a = -|divisor| }
+126: c := -1;                                   { c stores divisor's sign }
 127: alu := b; if n then goto 129;              { start: set d }
 128: d := 1; goto 132;                          { goto legal case }
 129: d := -1;                                   { d stores dividend's sign }

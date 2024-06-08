@@ -50,9 +50,9 @@
  */
 char cstr_6[7] = "000000\0";
 char cstr_8[9] = "00000000\0";
-char cstr_12[13];
-char cstr_16[17];
-char binstr_16[17];
+char cstr_12[13] = "000000000000\0";
+char cstr_16[17] = "0000000000000000\0";
+char binstr_16[17] = "0000000000000000\0";
 int label_pc = -1;
 unsigned short pc = 0;
 FILE* p1;
@@ -637,7 +637,7 @@ void search_symbol_table(const char* symbol) {
 
 void str_6(const char* cstr) {
     const unsigned short str_val = atoi(cstr);
-    int mask = 32;
+    int mask = 1 << 5;
     for (int i = 0; i < 6; i++, mask >>= 1) {
         cstr_6[i] = str_val & mask ? '1' : '0';
     }
@@ -645,7 +645,7 @@ void str_6(const char* cstr) {
 
 void str_8(const char* cstr) {
     const unsigned short str_val = atoi(cstr);
-    int mask = 128;
+    int mask = 1 << 7;
     for (int i = 0; i < 8; i++, mask >>= 1) {
         cstr_8[i] = str_val & mask ? '1' : '0';
     }
@@ -653,48 +653,24 @@ void str_8(const char* cstr) {
 
 void str_12(const char* cstr) {
     const unsigned short str_val = atoi(cstr);
-
-    for (int i = 0; i < 12; i++) {
-        cstr_12[i] = '0';
-    }
-    cstr_12[12] = '\0';
-
-    int mask = 2048;
-    for (int i = 0; i < 12; i++) {
-        if (str_val & mask)
-            cstr_12[i] = '1';
-        mask >>= 1;
+    int mask = 1 << 11;
+    for (int i = 0; i < 12; i++, mask >>= 1) {
+        cstr_12[i] = str_val & mask ? '1' : '0';
     }
 }
 
 void str_16(const char* cstr) {
-    const short str_val = atoi(cstr);
-
-    for (int i = 0; i < 16; i++) {
-        cstr_16[i] = '0';
-    }
-    cstr_16[16] = '\0';
-
-    int mask = 1024 * 32;
-    for (int i = 0; i < 16; i++) {
-        if (str_val & mask)
-            cstr_16[i] = '1';
-        mask >>= 1;
+    const unsigned short str_val = atoi(cstr);
+    int mask = 1 << 15;
+    for (int i = 0; i < 16; i++, mask >>= 1) {
+        cstr_16[i] = str_val & mask ? '1' : '0';
     }
 }
 
 void bstr_16(const unsigned short bin_num) {
     const short str_val = bin_num;
-
-    for (int i = 0; i < 16; i++) {
-        binstr_16[i] = '0';
-    }
-    binstr_16[16] = '\0';
-
-    int mask = 1024 * 32;
-    for (int i = 0; i < 16; i++) {
-        if (str_val & mask)
-            binstr_16[i] = '1';
-        mask >>= 1;
+    int mask = 1 << 15;
+    for (int i = 0; i < 16; i++, mask >>= 1) {
+        binstr_16[i] = str_val & mask ? '1' : '0';
     }
 }

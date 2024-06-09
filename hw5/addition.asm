@@ -76,16 +76,13 @@ Loop1:          JZER Finish:        ;
                 SUBD c1:            ;
                 STOD loopCount:     ; loopCount--;
                 LODL 1              ; Load the 2-chars
-                JNEG Add1:          ;
-                ADDL 1              ;
-                STOL 1              ; m[sp + 1] <<= 1
+                ADDL 1              ; ac += m[sp + 1]
+                JNEG Add1:          ; If MSB = 1, add 1 after the shift
+                JUMP NotAdd1:       ; If MSB = 0, do nothing
+Add1:           ADDD c1:            ; ac++;
+NotAdd1:        STOL 1              ; m[sp + 1] <<= 1
                 LODD loopCount:     ; Continue next loop
-                JUMP Loop1:         ;
-Add1:           ADDL 1              ; ac += m[sp + 1]
-                ADDD c1:            ; ac++;
-                STOL 1              ; m[sp + 1] = (m[sp + 1] << 1) + 1
-                LODD loopCount:     ; Continue next loop
-                JUMP Loop1:         ;
+                JUMP Loop1:         ;     ;
 Finish:         LODL 1              ; ac := m[sp + 1]
                 RETN                ; Return m[sp + 1]
 .LOC 200                            ; Constants

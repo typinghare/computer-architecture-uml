@@ -2,6 +2,9 @@ Start:          LODD on:            ;
                 STOD 4095           ;
                 CALL BusyWrite:     ;
                 LOCO prompt:        ;
+
+; @brief Prints a string.
+; @param r[ac] The address of the string to print.
 PrintStr:       PSHI                ; Push the first 2-chars to stack
                 ADDD c1:            ; Increment the address in AC by 1
                 STOD strptr:        ; Save the address of the next 2-chars
@@ -21,8 +24,7 @@ PrintStr:       PSHI                ; Push the first 2-chars to stack
                 LODD strptr:        ; Load the address of the next 2-chars to AC
                 JUMP PrintStr:      ; Continue to print the string
 CPrintCRLF:     INSP 1              ; Clean up the stack before printing CRLF
-; @brief Prints "\r\n"
-PrintCRLF:      LODD asciicr:       ;
+PrintCRLF:      LODD asciicr:       ; The following prints "\r\n".
                 STOD 4094           ;
                 CALL BusyWrite:     ; Print '\r'
                 LODD asciinl:       ;
@@ -30,7 +32,9 @@ PrintCRLF:      LODD asciicr:       ;
                 CALL BusyWrite:     ; Print '\n'
                 LODD on:            ;
                 STOD 4093           ; Let MIC-1 program print the string
-; @brief Scan in a 1-5 digit number
+
+; @brief Scans in a 1-5 digit number. The number will be stored to either num1
+;        or num2 according to numPtr.
 ScanNum:        call BusyRead:      ; Read a character
                 LODD 4092           ; Lodd the character to AC
                 SUBD ascii0:        ; Convert it into the corresponding digit
@@ -46,8 +50,9 @@ NextDigit:      CALL BusyRead:      ; Read a character
                 ADDL 0              ; Add m[sp] to it
                 STOL 0              ; Store the result to m[sp]
                 JUMP NextDigit:     ; Continue to read the next digit
+
 ; @brief Increments numPtr and decrements numCount; Jumps to AddNums if
-;        numnCount == 0, otherwise reads the other number
+;        numnCount == 0, otherwise reads the other number.
 EndNum:         LODD numPtr:        ;
                 POPI                ; Pop and store the value to numPtr
                 ADDD c1:            ;
@@ -59,18 +64,21 @@ EndNum:         LODD numPtr:        ;
                 JUMP Start:         ; Read the other number
 ; @brief Adds the two numbers.
 AddNum:         HALT                ;
-; @brief Writes a character to the buffer; wait until m[4095] >= 10
+
+; @brief Writes a character to the buffer; wait until m[4095] >= 10.
 BusyWrite:      LODD 4095
                 SUBD asciinl:       ;
                 JNEG BusyWrite:     ;
                 RETN                ; Return
-; @brief Reads a character into the buffer; wait until m[4093] >= 10
+
+; @brief Reads a character into the buffer; wait until m[4093] >= 10.
 BusyRead:       LODD 4093           ; Buzy waiting read
                 SUBD asciinl:       ;
                 JNEG BusyRead:      ;
                 RETN                ; Return
-; @brief Shifts the left 8 bits to the right
-; @param m[sp + 1]: the 2-chars to be processed
+
+; @brief Shifts the left 8 bits to the right.
+; @param m[sp + 1] The 2-chars to be processed.
 SwapChars:      LOCO 8              ; ac := 8
 Loop1:          JZER Finish:        ;
                 SUBD c1:            ;
@@ -86,7 +94,8 @@ StoreNewChars:  STOL 1              ; m[sp + 1] = ac
                 JUMP Loop1:         ;
 Finish:         LODL 1              ; ac := m[sp + 1]
                 RETN                ; Return m[sp + 1]
-.LOC 200                            ; Constants
+
+.LOC 200                            ; <Constants>
 on:             8                   ; MIC-1 on signal
 ascii0:         48                  ; '0'
 asciinl:        10                  ; '\n'
@@ -95,7 +104,8 @@ c1:             1                   ; Constant 1
 c10:            10                  ; Constant 10
 c255:           255                 ; Constant 255
 prompt:         "Please input a 1-5 digit number followed by enter: "
-.LOC 500                            ; Variables
+
+.LOC 500                            ; <Variables>
 strptr:         0                   ; Pointer to character to print
 nextChar:       0                   ; Next character
 num1:           0                   ; The first addend

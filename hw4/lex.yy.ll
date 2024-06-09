@@ -66,7 +66,7 @@
 [Dd][Ii][Vv]                            return(DIV);
 \".+\"				                    return(STR);
 -?[0-9][0-9]*                           return(INTEG);
-[A-Za-z][0-9A-Za-z]*:		            return(LABEL);
+[A-Za-z][0-9A-Za-z_]*:                  return(LABEL);
 \.LOC				                    return(LOC);
 ;.*\n	;
 " "     |

@@ -562,9 +562,8 @@ void generate_code(const int line_num) {
             fscanf(p1, "%s", symbol);
             if ((sym_val = get_symbol_val(symbol)) == -1) {
                 fprintf(
-                    stderr,
-                    "(Line %d) Symbol does not exist in the symbol table: %s\n",
-                    line, symbol);
+                    stderr, "Symbol does not exist in the symbol table: %s\n",
+                    symbol);
                 exit(27);
             }
 

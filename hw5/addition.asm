@@ -49,7 +49,6 @@ NextDigit:      CALL BusyRead:      ; Read a character
 ; @brief Increments numPtr and decrements numCount; Jumps to AddNums if
 ;        numnCount == 0, otherwise reads the other number
 EndNum:         LODD numPtr:        ;
-                HALT
                 POPI                ; Pop and store the value to numPtr
                 ADDD c1:            ;
                 STOD numPtr:        ; numPtr++;

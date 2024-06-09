@@ -39,9 +39,9 @@ bgndig:         call BusyRead:      ; Read a character
                 PUSH                ; Push the digit to the stack
 NextDigit:      CALL BusyRead:      ; Read a character
                 LODD 4092           ;
-                STOD nextChar       ; Store the character
+                STOD nextChar:      ; Store the character
                 SUBD asciinl:       ;
-                JZER endNum         ; If the character is '\n', it ends reading
+                JZER endNum:        ; If the character is '\n', it ends reading
                 MULT 10             ;
                 LODD nextChar:      ;
                 SUBD ascii0:        ;

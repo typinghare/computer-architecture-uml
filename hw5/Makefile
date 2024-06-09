@@ -1,4 +1,4 @@
-MASM_MRD = masm_mrd
+MASM = masm
 PROM_MRD_DAT = prom_mrd.dat
 ADDITION_OBJ = addition.obj
 
@@ -13,7 +13,7 @@ run: $(PROM_MRD_DAT) $(ADDITION_OBJ)
 	$(MIC1) $^ $(STARTING_PC) $(STARTING_SP)
 
 %.obj: %.asm
-	./$(MASM_MRD) < $< > $@
+	./$(MASM) < $< > $@
 
 clean:
 	rm -f $(ADDITION_OBJ)

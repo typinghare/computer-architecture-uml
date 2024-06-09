@@ -606,9 +606,9 @@ void generate_code(const int line_num) {
             for (i = 0; i < 12; i++) {
                 instruction[i + 5] = cstr_12[i];
             }
-            printf("%s%s\n", (line_num ? line_buffer : "\0"), &instruction[1]);
+            printf("%s%s\n", line_num ? line_buffer : "\0", &instruction[1]);
         } else
-            printf("%s%s\n", (line_num ? line_buffer : "\0"), instruction);
+            printf("%s%s\n", line_num ? line_buffer : "\0", instruction);
     }
     fclose(p1);
 }

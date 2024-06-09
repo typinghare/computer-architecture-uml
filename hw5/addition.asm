@@ -47,8 +47,8 @@ NextDigit:      CALL BusyRead:      ; Read a character
                 SUBD ascii0:        ;
                 ADDL 0              ;
                 STOD 0              ;
-                JUMP nextDigit:     ;
-endNum:         LODD numPtr         ;
+                JUMP NextDigit:     ;
+endNum:         LODD numPtr:        ;
                 POPI                ;
                 ADDD c1:            ;
                 stod numPtr:        ;

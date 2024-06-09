@@ -163,6 +163,7 @@ int main(const int argc, char* argv[]) {
     while ((tok = yylex())) {
         switch (tok) {
             case LODD:
+                printf("tok type: %d", tok);
                 switch (tok = yylex()) {
                     case INTEG:
                         str_12(yytext);
@@ -173,7 +174,6 @@ int main(const int argc, char* argv[]) {
                             p1, "%d  U0000000000000000    %s\n", pc, yytext);
                         break;
                     default:
-                        fprintf(stderr, "type: %d", tok);
                         fprintf(
                             stderr, "Bad operand after LODD is %s on line %d\n",
                             yytext, pc);

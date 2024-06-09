@@ -496,6 +496,7 @@ int main(const int argc, char* argv[]) {
 
             case LINE:
                 line++;
+                break;
 
             default:
                 fprintf(stderr, "Unknown token type: %d\n", tok);

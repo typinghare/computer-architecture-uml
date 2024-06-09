@@ -72,7 +72,7 @@
 \n                                      return(LINE);
 ;[^\n]*                                 ;  // Ignore comments
 [ \t\r]+                                ;  // Ignore whitespace
-[^;\n]*                                 return(JUNK);
+[^ \t\r\n;]*                            return(JUNK);
 
 %%
 

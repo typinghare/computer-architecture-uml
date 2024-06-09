@@ -464,7 +464,7 @@ int main(const int argc, char* argv[]) {
                 }
                 if ((temp = (unsigned short)atoi(yytext)) < pc) {
                     fprintf(
-                        stderr, "Bad operand after .LOC is %s, TOO SMALL !\n",
+                        stderr, "Bad operand after .LOC: %s. TOO SMALL !\n",
                         yytext);
                     exit(1);
                 }
@@ -491,7 +491,7 @@ int main(const int argc, char* argv[]) {
                 break;
 
             case JUNK:
-                fprintf(stderr, "Unrecognized token is %s\n", yytext);
+                fprintf(stderr, "Unrecognized token: \"%s\"\n", yytext);
                 exit(26);
 
             case LINE:

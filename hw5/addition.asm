@@ -7,20 +7,18 @@ PrintStr:       PSHI                ; Push the first 2-chars to stack
                 STOD strptr:        ; Save the address of the next 2-chars
                 POP                 ; Pop the first 2-chars to AC
                 JZER PrintCRLF:     ; End printing if the character is '\0'
-                STOD 4094           ; Store the 2-chars to buffer
+                STOD 4094           ; Store the lower character to the buffer
                 PUSH                ; Push the 2-chars to the stack
-                HALT
                 SUBD c255:          ;
-                HALT
                 JNEG CPrintCRLF:    ; Clean the stack and print CRLF
                 CALL SwapChars:     ; Swap the two characters
                 INSP 1              ; Clear the stack
-                PUSH                ; Push the
+                PUSH                ; Push the swaped 2-chars to the stack
                 CALL BusyWrite:     ;
-                POP                 ;
-                STOD 4094           ;
-                CALL BusyWrite:     ;
-                LODD strptr:        ; Load the address of the next-2chars to AC
+                POP                 ; Pop the swapeed 2-chars to AC
+                STOD 4094           ; Store the higher character to the buffer
+                CALL BusyWrite:     ; Wait until it is printed
+                LODD strptr:        ; Load the address of the next 2-chars to AC
                 JUMP PrintStr:      ; Continue to print the string
 CPrintCRLF:     INSP 1              ; Clean up the stack before printing CRLF
 ; @brief Prints "\r\n"
@@ -41,23 +39,23 @@ NextDigit:      CALL BusyRead:      ; Read a character
                 LODD 4092           ;
                 STOD nextChar:      ; Store the character
                 SUBD asciinl:       ;
-                JZER endNum:        ; If the character is '\n', it ends reading
+                JZER EndNum:        ; If the character is '\n', it ends reading
                 MULT 10             ;
                 LODD nextChar:      ;
                 SUBD ascii0:        ;
                 ADDL 0              ;
                 STOD 0              ;
                 JUMP NextDigit:     ;
-endNum:         LODD numPtr:        ;
-                POPI                ;
+; @brief
+EndNum:         LODD numPtr:        ;
                 ADDD c1:            ;
-                stod numPtr:        ;
-                lodd numCount:      ;
-                jzer addnms:        ;
-                subd c1:            ;
-                stod numCount:      ;
-                jump Start:         ;
-addnms: halt
+                STOD numPtr:        ; numPtr++;
+                LODD numCount:      ;
+                JZER AddNumbers:    ; Add the two numbers if numCount == 0
+                SUBD c1:            ;
+                STOD numCount:      ; numCount--;
+                JUMP Start:         ; Read the next number
+AddNumbers:     HALT                ;
 ; @brief Writes a character to the buffer; wait until m[4095] >= 10
 BusyWrite:      LODD 4095
                 SUBD asciinl:       ;
@@ -97,7 +95,9 @@ c10:            10                  ; Constant 10
 c255:           255                 ; Constant 255
 strptr:         0                   ; Pointer to character to print
 nextChar:       0                   ; Next character
-numPtr:         0                   ; number pointer
+num1:           0                   ;
+num2:           0                   ;
+numPtr:         num1:               ; Pointer to the number to process
 numCount:       1                   ;
 loopCount:      0                   ; Loop count
 prompt:         "Please input a 1-5 digit number followed by enter: "

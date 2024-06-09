@@ -76,9 +76,9 @@ Loop1:          JZER Finish:        ;
                 SUBD c1:            ;
                 STOD loopCount:     ; loopCount--;
                 LODL 1              ; ac = m[sp + 1]
-                JNEG Add1           ; If MSB == 1, add 1 after the shift
+                JNEG Add1:          ; If MSB == 1, add 1 after the shift
                 ADDL 1              ; Equivalent to: ac <<= 1
-                JUMP StoreNewChars  ;
+                JUMP StoreNewChars: ;
 Add1:           ADDL 1              ; Equivalent to: ac <<= 1
                 ADDD c1:            ; ac++;
 StoreNewChars:  STOL 1              ; m[sp + 1] = ac

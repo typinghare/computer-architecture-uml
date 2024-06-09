@@ -496,6 +496,7 @@ int main(const int argc, char* argv[]) {
 
             case LINE:
                 line++;
+                pc--;
                 break;
 
             default:
@@ -560,7 +561,10 @@ void generate_code(const int line_num) {
             char symbol[26];
             fscanf(p1, "%s", symbol);
             if ((sym_val = get_symbol_val(symbol)) == -1) {
-                fprintf(stderr, "no symbol in symbol table: %s\n", symbol);
+                fprintf(
+                    stderr,
+                    "(Line %d) Symbol does not exist in the symbol table: %s\n",
+                    line, symbol);
                 exit(27);
             }
 
@@ -649,6 +653,7 @@ void bstr_16(const unsigned short bin_num) {
 
 void badOperandError(char* name, char* token, const int line) {
     fprintf(
-        stderr, "Bad operand after %s is %s on line %d\n", name, token, line);
+        stderr, "(Line %d) Bad operand \"%s\" after \"%s\"\n", line, token,
+        name);
     exit(1);
 }

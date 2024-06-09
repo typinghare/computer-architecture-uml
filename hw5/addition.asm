@@ -44,7 +44,7 @@ NextDigit:      CALL BusyRead:      ; Read a character
                 LODD nextChar:      ; Load the next character to AC
                 SUBD ascii0:        ; Convert it into the corresponding digit
                 ADDL 0              ; Add m[sp] to it
-                STOD 0              ; Store the result to m[sp]
+                STOL 0              ; Store the result to m[sp]
                 JUMP NextDigit:     ; Continue to read the next digit
 ; @brief Increments numPtr and decrements numCount; Jumps to AddNums if
 ;        numnCount == 0, otherwise reads the other number

@@ -44,6 +44,7 @@
 #define MULT 30
 #define RSHIFT 31
 #define DIV 32
+#define LINE 100
 
 /**
  * Global constants.
@@ -182,7 +183,7 @@ int main(const int argc, char* argv[]) {
                             p1, "%d  U0000000000000000    %s\n", pc, yytext);
                         break;
                     default:
-                        badOperandError("LODD", yytext, pc);
+                        badOperandError("LODD", yytext, line);
                 }
                 break;
 
@@ -197,7 +198,7 @@ int main(const int argc, char* argv[]) {
                             p1, "%d  U0001000000000000    %s\n", pc, yytext);
                         break;
                     default:
-                        badOperandError("STOD", yytext, pc);
+                        badOperandError("STOD", yytext, line);
                 }
                 break;
 
@@ -212,7 +213,7 @@ int main(const int argc, char* argv[]) {
                             p1, "%d  U0010000000000000    %s\n", pc, yytext);
                         break;
                     default:
-                        badOperandError("ADDD", yytext, pc);
+                        badOperandError("ADDD", yytext, line);
                 }
                 break;
 
@@ -227,7 +228,7 @@ int main(const int argc, char* argv[]) {
                             p1, "%d  U0011000000000000    %s\n", pc, yytext);
                         break;
                     default:
-                        badOperandError("SUBD", yytext, pc);
+                        badOperandError("SUBD", yytext, line);
                 }
                 break;
 
@@ -242,7 +243,7 @@ int main(const int argc, char* argv[]) {
                             p1, "%d  U0100000000000000    %s\n", pc, yytext);
                         break;
                     default:
-                        badOperandError("JPOS", yytext, pc);
+                        badOperandError("JPOS", yytext, line);
                 }
                 break;
 
@@ -257,7 +258,7 @@ int main(const int argc, char* argv[]) {
                             p1, "%d  U0101000000000000    %s\n", pc, yytext);
                         break;
                     default:
-                        badOperandError("JZER", yytext, pc);
+                        badOperandError("JZER", yytext, line);
                 }
                 break;
 
@@ -272,7 +273,7 @@ int main(const int argc, char* argv[]) {
                             p1, "%d  U0110000000000000    %s\n", pc, yytext);
                         break;
                     default:
-                        badOperandError("JUMP", yytext, pc);
+                        badOperandError("JUMP", yytext, line);
                 }
                 break;
 
@@ -295,14 +296,14 @@ int main(const int argc, char* argv[]) {
                             p1, "%d  U0111000000000000    %s\n", pc, yytext);
                         break;
                     default:
-                        badOperandError("LOCO", yytext, pc);
+                        badOperandError("LOCO", yytext, line);
                 }
                 break;
 
 
             case LODL:
                 if ((tok = yylex()) != INTEG) {
-                    badOperandError("LODL", yytext, pc);
+                    badOperandError("LODL", yytext, line);
                 }
                 str_12(yytext);
                 fprintf(p1, "%d  1000%s\n", pc, cstr_12);
@@ -310,7 +311,7 @@ int main(const int argc, char* argv[]) {
 
             case STOL:
                 if ((tok = yylex()) != INTEG) {
-                    badOperandError("STOL", yytext, pc);
+                    badOperandError("STOL", yytext, line);
                 }
                 str_12(yytext);
                 fprintf(p1, "%d  1001%s\n", pc, cstr_12);
@@ -318,7 +319,7 @@ int main(const int argc, char* argv[]) {
 
             case ADDL:
                 if ((tok = yylex()) != INTEG) {
-                    badOperandError("ADDL", yytext, pc);
+                    badOperandError("ADDL", yytext, line);
                 }
                 str_12(yytext);
                 fprintf(p1, "%d  1010%s\n", pc, cstr_12);
@@ -326,7 +327,7 @@ int main(const int argc, char* argv[]) {
 
             case SUBL:
                 if ((tok = yylex()) != INTEG) {
-                    badOperandError("SUBL", yytext, pc);
+                    badOperandError("SUBL", yytext, line);
                 }
                 str_12(yytext);
                 fprintf(p1, "%d  1011%s\n", pc, cstr_12);
@@ -343,7 +344,7 @@ int main(const int argc, char* argv[]) {
                             p1, "%d  U1100000000000000    %s\n", pc, yytext);
                         break;
                     default:
-                        badOperandError("JNEG", yytext, pc);
+                        badOperandError("JNEG", yytext, line);
                 }
                 break;
 
@@ -358,7 +359,7 @@ int main(const int argc, char* argv[]) {
                             p1, "%d  U1101000000000000    %s\n", pc, yytext);
                         break;
                     default:
-                        badOperandError("JNZE", yytext, pc);
+                        badOperandError("JNZE", yytext, line);
                 }
                 break;
 
@@ -373,7 +374,7 @@ int main(const int argc, char* argv[]) {
                             p1, "%d  U1110000000000000    %s\n", pc, yytext);
                         break;
                     default:
-                        badOperandError("CALL", yytext, pc);
+                        badOperandError("CALL", yytext, line);
                 }
                 break;
 
@@ -403,7 +404,7 @@ int main(const int argc, char* argv[]) {
 
             case INSP:
                 if ((tok = yylex()) != INTEG) {
-                    badOperandError("INSP", yytext, pc);
+                    badOperandError("INSP", yytext, line);
                 }
                 str_8(yytext);
                 fprintf(p1, "%d  11111100%s\n", pc, cstr_8);
@@ -411,7 +412,7 @@ int main(const int argc, char* argv[]) {
 
             case DESP:
                 if ((tok = yylex()) != INTEG) {
-                    badOperandError("DESP", yytext, pc);
+                    badOperandError("DESP", yytext, line);
                 }
                 str_8(yytext);
                 fprintf(p1, "%d  11111110%s\n", pc, cstr_8);
@@ -423,7 +424,7 @@ int main(const int argc, char* argv[]) {
 
             case MULT:
                 if ((tok = yylex()) != INTEG) {
-                    badOperandError("MULT", yytext, pc);
+                    badOperandError("MULT", yytext, line);
                 }
                 str_6(yytext);
                 fprintf(p1, "%d 1111111100%s\n", pc, cstr_6);
@@ -431,7 +432,7 @@ int main(const int argc, char* argv[]) {
 
             case RSHIFT:
                 if ((tok = yylex()) != INTEG) {
-                    badOperandError("RSHIFT", yytext, pc);
+                    badOperandError("RSHIFT", yytext, line);
                 }
                 str_6(yytext);
                 fprintf(p1, "%d 1111111101%s\n", pc, cstr_6);
@@ -459,7 +460,7 @@ int main(const int argc, char* argv[]) {
 
             case LOC:
                 if ((tok = yylex()) != INTEG) {
-                    badOperandError(".LOC", yytext, pc);
+                    badOperandError(".LOC", yytext, line);
                 }
                 if ((temp = (unsigned short)atoi(yytext)) < pc) {
                     fprintf(
@@ -492,6 +493,9 @@ int main(const int argc, char* argv[]) {
             case JUNK:
                 fprintf(stderr, "Unrecognized token is %s\n", yytext);
                 exit(26);
+
+            case LINE:
+                line++;
 
             default:
                 fprintf(stderr, "Unknown token type: %d\n", tok);

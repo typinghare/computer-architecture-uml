@@ -75,14 +75,15 @@ SwapChars:      LOCO 8              ; ac := 8
 Loop1:          JZER Finish:        ;
                 SUBD c1:            ;
                 STOD loopCount:     ; loopCount--;
-                LODL 1              ; Load the 2-chars
-                ADDL 1              ; ac += m[sp + 1]
-                JNEG Add1:          ; If MSB = 1, add 1 after the shift
-                JUMP NotAdd1:       ; If MSB = 0, do nothing
-Add1:           ADDD c1:            ; ac++;
-NotAdd1:        STOL 1              ; m[sp + 1] <<= 1
+                LODL 1              ; ac = m[sp + 1]
+                JNEG Add1           ; If MSB == 1, add 1 after the shift
+                ADDL 1              ; Equivalent to: ac <<= 1
+                JUMP StoreNewChars  ;
+Add1:           ADDL 1              ; Equivalent to: ac <<= 1
+                ADDD c1:            ; ac++;
+StoreNewChars:  STOL 1              ; m[sp + 1] = ac
                 LODD loopCount:     ; Continue next loop
-                JUMP Loop1:         ;     ;
+                JUMP Loop1:         ;
 Finish:         LODL 1              ; ac := m[sp + 1]
                 RETN                ; Return m[sp + 1]
 .LOC 200                            ; Constants
@@ -98,7 +99,7 @@ prompt:         "Please input a 1-5 digit number followed by enter: "
 strptr:         0                   ; Pointer to character to print
 nextChar:       0                   ; Next character
 num1:           0                   ; The first addend
-num2:           0                   ; The second addendl
+num2:           0                   ; The second addend
 numPtr:         num1:               ; Pointer to the number to process
-numCount:       1                   ;
-loopCount:      0                   ; Loop count
+numCount:       1                   ; The count of remaining numbers to read
+loopCount:      0                   ; Loop counts used in SwapChars

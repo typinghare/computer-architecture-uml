@@ -48,10 +48,16 @@ NextDigit:      CALL BusyRead:      ; Read a character
                 ADDL 0              ;
                 STOD 0              ;
                 JUMP nextDigit:     ;
-endNum:         LODD                ;
-                POPI
-                ADDD c1:
-
+endNum:         LODD numPtr         ;
+                POPI                ;
+                ADDD c1:            ;
+                stod numPtr:        ;
+                lodd numCount:      ;
+                jzer addnms:        ;
+                subd c1:            ;
+                stod numCount:      ;
+                jump Start:         ;
+addnms: halt
 ; @brief Writes a character to the buffer; wait until m[4095] >= 10
 BusyWrite:      LODD 4095
                 SUBD asciinl:       ;
@@ -92,5 +98,6 @@ c255:           255                 ; Constant 255
 strptr:         0                   ; Pointer to character to print
 nextChar:       0                   ; Next character
 numPtr:         0                   ; number pointer
+numCount:       1                   ;
 loopCount:      0                   ; Loop count
 prompt:         "Please input a 1-5 digit number followed by enter: "

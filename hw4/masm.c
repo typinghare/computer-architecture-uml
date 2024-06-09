@@ -153,7 +153,7 @@ int main(const int argc, char* argv[]) {
 
     // if option `-s` is included on masm command, then set up to dump the
     // symbol table after the binary code
-    if (argc > 1 && (strcmp(argv[1], "-s") == 0))
+    if (argc > 1 && strcmp(argv[1], "-s") == 0)
         dump_tab = line_number = 1;
 
     sprintf(temp_file, "/tmp/asm_%d", getuid());
@@ -494,7 +494,7 @@ int main(const int argc, char* argv[]) {
                     fprintf(stderr, "Bad operand after .LOC is %s\n", yytext);
                     exit(1);
                 }
-                if ((temp = ((unsigned short)atoi(yytext))) < pc) {
+                if ((temp = (unsigned short)atoi(yytext)) < pc) {
                     fprintf(
                         stderr, "Bad operand after .LOC is %s, TOO SMALL !\n",
                         yytext);
@@ -514,7 +514,7 @@ int main(const int argc, char* argv[]) {
                     }
                     temp = (unsigned short)*(yytext + i++);
                     if (*(yytext + i) != '\"') {
-                        temp = (temp | ((unsigned short)*(yytext + i) << 8));
+                        temp = temp | (unsigned short)*(yytext + i) << 8;
                     }
                     bstr_16(temp);
                     fprintf(p1, "%d  %s\n", pc, binstr_16);

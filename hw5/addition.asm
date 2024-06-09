@@ -31,7 +31,7 @@ PrintCRLF:      LODD asciicr:       ;
                 LODD on:            ;
                 STOD 4093           ; Let MIC-1 program print the string
 ; @brief Scan in a 1-5 digit number
-scanNum:        call BusyRead:      ; Read a character
+ScanNum:        call BusyRead:      ; Read a character
                 LODD 4092           ; Lodd the character to AC
                 SUBD ascii0:        ; Convert it into the corresponding digit
                 PUSH                ; Push the digit to the stack
@@ -49,6 +49,7 @@ NextDigit:      CALL BusyRead:      ; Read a character
 ; @brief Increments numPtr and decrements numCount; Jumps to AddNums if
 ;        numnCount == 0, otherwise reads the other number
 EndNum:         LODD numPtr:        ;
+                HALT
                 POPI                ; Pop and store the value to numPtr
                 ADDD c1:            ;
                 STOD numPtr:        ; numPtr++;
@@ -57,7 +58,7 @@ EndNum:         LODD numPtr:        ;
                 SUBD c1:            ;
                 STOD numCount:      ; numCount--;
                 JUMP Start:         ; Read the other number
-;@brief
+; @brief Adds the two numbers.
 AddNum:         HALT                ;
 ; @brief Writes a character to the buffer; wait until m[4095] >= 10
 BusyWrite:      LODD 4095

@@ -30,8 +30,8 @@ PrintCRLF:      LODD asciicr:       ;
                 CALL BusyWrite:     ; Print '\n'
                 LODD on:            ;
                 STOD 4093           ; Let MIC-1 program print the string
-; Scan in a 1-5 digit number
-bgndig:         call BusyRead:      ; Read a character
+; @brief Scan in a 1-5 digit number
+scanNum:        call BusyRead:      ; Read a character
                 LODD 4092           ; Lodd the character to AC
                 SUBD ascii0:        ; Convert it into the corresponding digit
                 PUSH                ; Push the digit to the stack
@@ -40,22 +40,25 @@ NextDigit:      CALL BusyRead:      ; Read a character
                 STOD nextChar:      ; Store the character
                 SUBD asciinl:       ;
                 JZER EndNum:        ; If the character is '\n', it ends reading
-                MULT 10             ;
-                LODD nextChar:      ;
-                SUBD ascii0:        ;
-                ADDL 0              ;
-                STOD 0              ;
-                JUMP NextDigit:     ;
-; @brief
+                MULT 10             ; Base 10 left shift
+                LODD nextChar:      ; Load the next character to AC
+                SUBD ascii0:        ; Convert it into the corresponding digit
+                ADDL 0              ; Add m[sp] to it
+                STOD 0              ; Store the result to m[sp]
+                JUMP NextDigit:     ; Continue to read the next digit
+; @brief Increments numPtr and decrements numCount; Jumps to AddNums if
+;        numnCount == 0, otherwise reads the other number
 EndNum:         LODD numPtr:        ;
+                POPI                ; Pop and store the value to numPtr
                 ADDD c1:            ;
                 STOD numPtr:        ; numPtr++;
                 LODD numCount:      ;
-                JZER AddNumbers:    ; Add the two numbers if numCount == 0
+                JZER AddNum:        ; Add the two numbers if numCount == 0
                 SUBD c1:            ;
                 STOD numCount:      ; numCount--;
-                JUMP Start:         ; Read the next number
-AddNumbers:     HALT                ;
+                JUMP Start:         ; Read the other number
+;@brief
+AddNum:         HALT                ;
 ; @brief Writes a character to the buffer; wait until m[4095] >= 10
 BusyWrite:      LODD 4095
                 SUBD asciinl:       ;
@@ -85,19 +88,20 @@ Add1:           ADDL 1              ; ac += m[sp + 1]
                 JUMP Loop1:         ;
 Finish:         LODL 1              ; ac := m[sp + 1]
                 RETN                ; Return m[sp + 1]
-.LOC 200
+.LOC 200                            ; Constants
 on:             8                   ; MIC-1 on signal
-ascii0:         48
-asciinl:        10
-asciicr:        13
+ascii0:         48                  ; '0'
+asciinl:        10                  ; '\n'
+asciicr:        13                  ; '\r'
 c1:             1                   ; Constant 1
 c10:            10                  ; Constant 10
 c255:           255                 ; Constant 255
+prompt:         "Please input a 1-5 digit number followed by enter: "
+.LOC 500                            ; Variables
 strptr:         0                   ; Pointer to character to print
 nextChar:       0                   ; Next character
-num1:           0                   ;
-num2:           0                   ;
+num1:           0                   ; The first addend
+num2:           0                   ; The second addendl
 numPtr:         num1:               ; Pointer to the number to process
 numCount:       1                   ;
 loopCount:      0                   ; Loop count
-prompt:         "Please input a 1-5 digit number followed by enter: "

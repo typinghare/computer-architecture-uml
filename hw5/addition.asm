@@ -34,7 +34,7 @@ PrintCRLF:      LODD asciicr:       ; The following prints "\r\n".
                 STOD 4093           ; Let MIC-1 program print the string
 
 ; @brief Scans in a 1-5 digit number. The number will be stored to either num1
-;        or num2 according to numPtr.
+;        or num2 according to num_ptr.
 ScanNum:        call BusyRead:      ; Read a character
                 LODD 4092           ; Lodd the character to AC
                 SUBD ascii0:        ; Convert it into the corresponding digit
@@ -51,12 +51,12 @@ NextDigit:      CALL BusyRead:      ; Read a character
                 STOL 0              ; Store the result to m[sp]
                 JUMP NextDigit:     ; Continue to read the next digit
 
-; @brief Increments numPtr and decrements numCount; Jumps to AddNums if
+; @brief Increments num_ptr and decrements numCount; Jumps to AddNums if
 ;        numnCount == 0, otherwise reads the other number.
-EndNum:         LODD numPtr:        ;
-                POPI                ; Pop and store the value to numPtr
+EndNum:         LODD num_ptr:        ;
+                POPI                ; Pop and store the value to num_ptr
                 ADDD c1:            ;
-                STOD numPtr:        ; numPtr++;
+                STOD num_ptr:        ; num_ptr++;
                 LODD numCount:      ;
                 JZER AddNum:        ; Add the two numbers if numCount == 0
                 SUBD c1:            ;
@@ -110,6 +110,6 @@ strptr:         0                   ; Pointer to character to print
 nextChar:       0                   ; Next character
 num1:           0                   ; The first addend
 num2:           0                   ; The second addend
-numPtr:         num1:               ; Pointer to the number to process
+num_ptr:         num1:               ; Pointer to the number to process
 numCount:       1                   ; The count of remaining numbers to read
 loopCount:      0                   ; Loop counts used in SwapChars

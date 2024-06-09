@@ -32,6 +32,7 @@
 #define         MULT        30
 #define         RSHIFT      31
 #define         DIV         32
+#define         LINE        100
 
 %}
 
@@ -68,12 +69,10 @@
 -?[0-9][0-9]*                           return(INTEG);
 [A-Za-z][0-9A-Za-z_]*:                  return(LABEL);
 \.LOC				                    return(LOC);
-;.*\n	;
-" "     |
-"\t"    |
-"\r"	|
-"\n"    ;
-[^ \t\r\n]*                             return(JUNK);
+\n                                      return(LINE);
+;[^\n]*                                 ;  // Ignore comments
+[ \t\r]+                                ;  // Ignore whitespace
+.                                       return(JUNK);
 
 %%
 

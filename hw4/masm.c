@@ -55,6 +55,7 @@ char cstr_16[17] = "0000000000000000\0";
 char binstr_16[17] = "0000000000000000\0";
 int label_pc = -1;
 unsigned short pc = 0;
+unsigned short line = 1;
 FILE* p1;
 
 /**
@@ -132,6 +133,14 @@ void dump_table(void);
 int get_symbol_val(const char* symbol);
 
 /**
+ * @brief Prints the message of a bad operand error, and exit the program.
+ * @param name The name of the instruction.
+ * @param token The operand token that causes the error.
+ * @param line The line of the token.
+ */
+void badOperandError(char* name, char* token, int line);
+
+/**
  * @brief Label name node.
  */
 struct nament {
@@ -173,10 +182,7 @@ int main(const int argc, char* argv[]) {
                             p1, "%d  U0000000000000000    %s\n", pc, yytext);
                         break;
                     default:
-                        fprintf(
-                            stderr, "Bad operand after LODD is %s on line %d\n",
-                            yytext, pc);
-                        exit(1);
+                        badOperandError("LODD", yytext, pc);
                 }
                 break;
 
@@ -191,10 +197,7 @@ int main(const int argc, char* argv[]) {
                             p1, "%d  U0001000000000000    %s\n", pc, yytext);
                         break;
                     default:
-                        fprintf(
-                            stderr, "Bad operand after STOD is %s on line %d\n",
-                            yytext, pc);
-                        exit(1);
+                        badOperandError("STOD", yytext, pc);
                 }
                 break;
 
@@ -209,10 +212,7 @@ int main(const int argc, char* argv[]) {
                             p1, "%d  U0010000000000000    %s\n", pc, yytext);
                         break;
                     default:
-                        fprintf(
-                            stderr, "Bad operand after ADDD is %s on line %d\n",
-                            yytext, pc);
-                        exit(1);
+                        badOperandError("ADDD", yytext, pc);
                 }
                 break;
 
@@ -227,10 +227,7 @@ int main(const int argc, char* argv[]) {
                             p1, "%d  U0011000000000000    %s\n", pc, yytext);
                         break;
                     default:
-                        fprintf(
-                            stderr, "Bad operand after SUBD is %s on line %d\n",
-                            yytext, pc);
-                        exit(1);
+                        badOperandError("SUBD", yytext, pc);
                 }
                 break;
 
@@ -245,10 +242,7 @@ int main(const int argc, char* argv[]) {
                             p1, "%d  U0100000000000000    %s\n", pc, yytext);
                         break;
                     default:
-                        fprintf(
-                            stderr, "Bad operand after JPOS is %s on line %d\n",
-                            yytext, pc);
-                        exit(1);
+                        badOperandError("JPOS", yytext, pc);
                 }
                 break;
 
@@ -263,10 +257,7 @@ int main(const int argc, char* argv[]) {
                             p1, "%d  U0101000000000000    %s\n", pc, yytext);
                         break;
                     default:
-                        fprintf(
-                            stderr, "Bad operand after JZER is %s on line %d\n",
-                            yytext, pc);
-                        exit(1);
+                        badOperandError("JZER", yytext, pc);
                 }
                 break;
 
@@ -281,10 +272,7 @@ int main(const int argc, char* argv[]) {
                             p1, "%d  U0110000000000000    %s\n", pc, yytext);
                         break;
                     default:
-                        fprintf(
-                            stderr, "Bad operand after JUMP is %s on line %d\n",
-                            yytext, pc);
-                        exit(1);
+                        badOperandError("JUMP", yytext, pc);
                 }
                 break;
 
@@ -307,18 +295,14 @@ int main(const int argc, char* argv[]) {
                             p1, "%d  U0111000000000000    %s\n", pc, yytext);
                         break;
                     default:
-                        fprintf(
-                            stderr, "Bad operand after LOCO is %s on line %d\n",
-                            yytext, pc);
-                        exit(1);
+                        badOperandError("LOCO", yytext, pc);
                 }
                 break;
 
 
             case LODL:
                 if ((tok = yylex()) != INTEG) {
-                    fprintf(stderr, "Bad operand after LODL is %s\n", yytext);
-                    exit(1);
+                    badOperandError("LODL", yytext, pc);
                 }
                 str_12(yytext);
                 fprintf(p1, "%d  1000%s\n", pc, cstr_12);
@@ -326,8 +310,7 @@ int main(const int argc, char* argv[]) {
 
             case STOL:
                 if ((tok = yylex()) != INTEG) {
-                    fprintf(stderr, "Bad operand after STOL is %s\n", yytext);
-                    exit(1);
+                    badOperandError("STOL", yytext, pc);
                 }
                 str_12(yytext);
                 fprintf(p1, "%d  1001%s\n", pc, cstr_12);
@@ -335,8 +318,7 @@ int main(const int argc, char* argv[]) {
 
             case ADDL:
                 if ((tok = yylex()) != INTEG) {
-                    fprintf(stderr, "Bad operand after ADDL is %s\n", yytext);
-                    exit(1);
+                    badOperandError("ADDL", yytext, pc);
                 }
                 str_12(yytext);
                 fprintf(p1, "%d  1010%s\n", pc, cstr_12);
@@ -344,8 +326,7 @@ int main(const int argc, char* argv[]) {
 
             case SUBL:
                 if ((tok = yylex()) != INTEG) {
-                    fprintf(stderr, "Bad operand after SUBL is %s\n", yytext);
-                    exit(1);
+                    badOperandError("SUBL", yytext, pc);
                 }
                 str_12(yytext);
                 fprintf(p1, "%d  1011%s\n", pc, cstr_12);
@@ -362,10 +343,7 @@ int main(const int argc, char* argv[]) {
                             p1, "%d  U1100000000000000    %s\n", pc, yytext);
                         break;
                     default:
-                        fprintf(
-                            stderr, "Bad operand after JNEG is %s on line %d\n",
-                            yytext, pc);
-                        exit(1);
+                        badOperandError("JNEG", yytext, pc);
                 }
                 break;
 
@@ -380,10 +358,7 @@ int main(const int argc, char* argv[]) {
                             p1, "%d  U1101000000000000    %s\n", pc, yytext);
                         break;
                     default:
-                        fprintf(
-                            stderr, "Bad operand after JNZE is %s on line %d\n",
-                            yytext, pc);
-                        exit(1);
+                        badOperandError("JNZE", yytext, pc);
                 }
                 break;
 
@@ -398,10 +373,7 @@ int main(const int argc, char* argv[]) {
                             p1, "%d  U1110000000000000    %s\n", pc, yytext);
                         break;
                     default:
-                        fprintf(
-                            stderr, "Bad operand after CALL is %s on line %d\n",
-                            yytext, pc);
-                        exit(1);
+                        badOperandError("CALL", yytext, pc);
                 }
                 break;
 
@@ -431,8 +403,7 @@ int main(const int argc, char* argv[]) {
 
             case INSP:
                 if ((tok = yylex()) != INTEG) {
-                    fprintf(stderr, "Bad operand after INSP is %s\n", yytext);
-                    exit(1);
+                    badOperandError("INSP", yytext, pc);
                 }
                 str_8(yytext);
                 fprintf(p1, "%d  11111100%s\n", pc, cstr_8);
@@ -440,8 +411,7 @@ int main(const int argc, char* argv[]) {
 
             case DESP:
                 if ((tok = yylex()) != INTEG) {
-                    fprintf(stderr, "Bad operand after DESP is %s\n", yytext);
-                    exit(1);
+                    badOperandError("DESP", yytext, pc);
                 }
                 str_8(yytext);
                 fprintf(p1, "%d  11111110%s\n", pc, cstr_8);
@@ -453,8 +423,7 @@ int main(const int argc, char* argv[]) {
 
             case MULT:
                 if ((tok = yylex()) != INTEG) {
-                    fprintf(stderr, "Bad operand after MULT is %s\n", yytext);
-                    exit(1);
+                    badOperandError("MULT", yytext, pc);
                 }
                 str_6(yytext);
                 fprintf(p1, "%d 1111111100%s\n", pc, cstr_6);
@@ -462,8 +431,7 @@ int main(const int argc, char* argv[]) {
 
             case RSHIFT:
                 if ((tok = yylex()) != INTEG) {
-                    fprintf(stderr, "Bad operand after RSHIFT is %s\n", yytext);
-                    exit(1);
+                    badOperandError("RSHIFT", yytext, pc);
                 }
                 str_6(yytext);
                 fprintf(p1, "%d 1111111101%s\n", pc, cstr_6);
@@ -491,8 +459,7 @@ int main(const int argc, char* argv[]) {
 
             case LOC:
                 if ((tok = yylex()) != INTEG) {
-                    fprintf(stderr, "Bad operand after .LOC is %s\n", yytext);
-                    exit(1);
+                    badOperandError(".LOC", yytext, pc);
                 }
                 if ((temp = (unsigned short)atoi(yytext)) < pc) {
                     fprintf(
@@ -527,7 +494,7 @@ int main(const int argc, char* argv[]) {
                 exit(26);
 
             default:
-                fprintf(stderr, "Default case, unrecoverable error\n");
+                fprintf(stderr, "Unknown token type: %d\n", tok);
                 exit(26);
         }
         pc++;
@@ -673,4 +640,10 @@ void bstr_16(const unsigned short bin_num) {
     for (int i = 0; i < 16; i++, mask >>= 1) {
         binstr_16[i] = str_val & mask ? '1' : '0';
     }
+}
+
+void badOperandError(char* name, char* token, const int line) {
+    fprintf(
+        stderr, "Bad operand after %s is %s on line %d\n", name, token, line);
+    exit(1);
 }

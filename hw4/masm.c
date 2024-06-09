@@ -163,7 +163,6 @@ int main(const int argc, char* argv[]) {
     while ((tok = yylex())) {
         switch (tok) {
             case LODD:
-                printf("tok type: %d", tok);
                 switch (tok = yylex()) {
                     case INTEG:
                         str_12(yytext);

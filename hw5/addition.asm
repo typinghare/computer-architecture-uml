@@ -127,7 +127,7 @@ ResolveChars:   LODD temp_num:      ;
                 JZER RCDone:        ; Return if temp_num == 0
                 CALL NextDigitChar: ; Get the next digit char
                 PUSH                ; Push it onto the stack
-                LODL res_char_ptr:  ; Load the pointer to the next res_char
+                LODD res_char_ptr:  ; Load the pointer to the next res_char
                 POPI                ; Pop the next digit char to res_char
                 ADDD c1:            ; res_char_ptr += 1
                 JUMP ResolveChars:  ; Contninue to resolve temp_num

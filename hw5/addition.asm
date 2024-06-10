@@ -140,7 +140,7 @@ RCDone:         LODD char_stack_ptr:;
                 RETN
 
 ; @brief Convert chars in the res_char stack to 2-chars and put them
-Resolve2Chars:
+Resolve2Chars:  HALT
 
 ; @brief Gets the next 2-char.
 ; @return ac The next 2-char. If temp_num is 0 then return 0; if temp_num has

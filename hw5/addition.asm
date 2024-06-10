@@ -162,6 +162,12 @@ Resolve2Chars:  LODD char_stack_ptr:;
                 LODD chars_ptr:     ;
                 POPI                ; Pop the combined 2-chars to &char_ptr
                 JUMP Resolve2Chars: ; Continue to resolve remaining 2-chars
+                LODD char_stack_ptr:;
+                ADDD C1:            ;
+                STOD char_stack_ptr:; char_stack_ptr++;
+                LODD chars_ptr:     ;
+                ADDD C1:            ;
+                STOD chars_ptr:     ; chars_ptr++;
 R2CDone:        RETN                ; Return
 
 ; @brief Divides temp_num by 10, and return the remainder as corresponding char.

@@ -119,7 +119,24 @@ AddNums:        LODD num1:          ; ac = num1
 ; 456 -> ['5', '4'], ['\0', '6']
 ; But: 1234 -> ['4', '3'], []
 PrintNum:       STOD temp_num:      ; Store the number to print to temp_num
-PrintNumLoop:   CALL NextDigitChar: ; Get the next digit char
+                CALL ResolveChars:  ; Resolve chars
+                RETN                ; Return
+
+; @brief
+ResolveChars:   LODD temp_num:      ;
+                JNER RCDone:        ; Return if temp_num == 0
+                CALL NextDigitChar: ; Get the next digit char
+                PUSH                ; Push it onto the stack
+                LODL res_char_ptr:  ; Load the pointer to the next res_char
+                POPI                ; Pop the next digit char to res_char
+                ADDD c1:            ; res_char_ptr += 1
+                JUMP ResolveChars:  ; Contninue to resolve temp_num
+RCDone:         RETN
+
+; @brief Gets the next 2-char.
+; @return ac The next 2-char. If temp_num is 0 then return 0; if temp_num has
+;            only one digit, then only return the low char.
+Next2Char:      CALL NextDigitChar: ; Get the next digit char
                 PUSH                ; Push the char onto stack
                 CALL SwapChars:     ; Left shift the char to get the high char
                 POP                 ; Pop to get the shifted char
@@ -129,15 +146,7 @@ PrintNumLoop:   CALL NextDigitChar: ; Get the next digit char
                 LODD high_char:     ; ac := high_char
                 ADDL 0              ; ac = high_char + low_char
                 INSP 1              ; Clear the stack
-                STOD result_0:      ;
-                LOCO result_0:      ; Load the address
-                CALL PrintStr:      ;
                 RETN                ; Return
-
-; @brief Get the next 2-char.
-; @return ac The next 2-char. If temp_num is 0 then return 0; if temp_num has
-;            only one digit, then only return the low char.
-Next2Char:      HALT
 
 ; @brief Divides temp_num by 10, and return the remainder as corresponding char.
 NextDigitChar:  LODD C10:           ; ac = 10
@@ -176,6 +185,12 @@ num_count:      1                   ; The count of remaining numbers to read
 loop_count:     0                   ; Loop counts
 temp_num:       0                   ; [507] Temporary number used in PrintNum
 high_char:      0                   ; [508] High character used in PrintNum
-result_0:       0
-result_1:       0
-result_2:       0
+res_char_0:     0
+res_char_1:     0
+res_char_2:     0
+res_char_3:     0
+res_char_4:     0
+res_char_ptr:   res_char_4:
+res_2char_0:    0
+res_2char_1:    0
+res_2char_3:    0

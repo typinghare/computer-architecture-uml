@@ -35,7 +35,7 @@ CPrintCRLF:     INSP 1              ; Clean up the stack before printing CRLF
 PrintCRLF:      LODD ascii_cr:      ; The following prints "\r\n".
                 STOD 4094           ;
                 CALL BusyWrite:     ; Print '\r'
-                LODD asciinl:       ;
+                LODD ascii_nl:       ;
                 STOD 4094           ;
                 CALL BusyWrite:     ; Print '\n'
                 LODD on:            ;
@@ -51,7 +51,7 @@ ScanNum:        call BusyRead:      ; Read a character
 NextDigit:      CALL BusyRead:      ; Read a character
                 LODD 4092           ;
                 STOD next_char:     ; Store the character
-                SUBD asciinl:       ;
+                SUBD ascii_nl:       ;
                 JZER EndNum:        ; If the character is '\n', it ends reading
                 MULT 10             ; Base 10 left shift
                 LODD next_char:     ; Load the next character to AC
@@ -74,13 +74,13 @@ EndNum:         LODD num_ptr:       ;
 
 ; @brief Writes a character to the buffer; wait until m[4095] >= 10.
 BusyWrite:      LODD 4095           ;
-                SUBD asciinl:       ;
+                SUBD ascii_nl:       ;
                 JNEG BusyWrite:     ;
                 RETN                ; Return
 
 ; @brief Reads a character into the buffer; wait until m[4093] >= 10.
 BusyRead:       LODD 4093           ; Buzy waiting read
-                SUBD asciinl:       ;
+                SUBD ascii_nl:       ;
                 JNEG BusyRead:      ;
                 RETN                ; Return
 

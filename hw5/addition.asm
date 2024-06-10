@@ -140,7 +140,7 @@ PrintNum:       STOD temp_num:      ;
                 ADDD ASCII_0:       ; Convert it into the corresponding char
                 PUSH                ; Push the char onto stack
                 CALL SwapChars:     ; Left shift the character
-                LODD low_char       ; ac := low_char
+                LODD low_char:     ; ac := low_char
                 LODL 0              ; ac := (high_char << 8) + low_char
                 INSP 1              ; Clear the stack
                 RETN                ; Return

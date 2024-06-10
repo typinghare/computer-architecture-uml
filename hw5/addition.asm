@@ -3,6 +3,7 @@ Start:          CALL PrintPrompt:   ; Print the prompt string
                 CALL PrintPrompt:   ; Print the prompt string
                 CALL ScanNum:       ; Scan the second number
                 CALL AddNums:       ; Add the two numbers
+                CALL PrintNum:      ; Print the sum
 
 PrintPrompt:    LODD on:            ;
                 STOD 4095           ;
@@ -103,7 +104,16 @@ Finish:         LODL 1              ; ac := m[sp + 1]
                 RETN                ; Return m[sp + 1]
 
 ; @brief Adds the two numbers. The result is stored to AC.
-AddNums:        HALT                ;
+; @return ac The result of num1 + num2
+AddNums:        LODD num1:          ;
+                PUSH                ;
+                LODD num2:          ;
+                ADDL 0              ; ac := num1 + num2
+                RETN                ; Return
+
+; @brief Prints a number in the string form of base 10.
+; @param ac The number to print.
+PrintNum:       HALT                ;
 
 .LOC 200                            ; <Constants>
 on:             8                   ; MIC-1 on signal

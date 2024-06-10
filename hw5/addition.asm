@@ -10,7 +10,7 @@ Start:          LOCO PROMPT:        ;
 
 ; @brief Prints a string.
 ; @param r[ac] The address of the string to print.
-PrintStr:       PUSH                ; Push the address to the stack
+PrintStr:       PUSH                ; Push the address onto the stack
                 LODD ON:            ; (Actually idk what does ON: mean)
                 STOD 4095           ; Prepare for writing buffer
                 CALL BusyWrite:     ; Wait until the the buffer is ready
@@ -21,12 +21,12 @@ PrintLoop:      PSHI                ; Push the first 2-chars to stack
                 POP                 ; Pop the first 2-chars to AC
                 JZER PrintCRLF:     ; End printing if the character is '\0'
                 STOD 4094           ; Store the lower character to the buffer
-                PUSH                ; Push the 2-chars to the stack
+                PUSH                ; Push the 2-chars onto the stack
                 SUBD C255:          ;
                 JNEG CPrintCRLF:    ; Clean the stack and print CRLF
                 CALL SwapChars:     ; Swap the two characters
                 INSP 1              ; Clear the stack
-                PUSH                ; Push the swaped 2-chars to the stack
+                PUSH                ; Push the swaped 2-chars onto the stack
                 CALL BusyWrite:     ;
                 POP                 ; Pop the swapeed 2-chars to AC
                 STOD 4094           ; Store the higher character to the buffer
@@ -49,7 +49,7 @@ PrintCRLF:      LODD ASCII_CR:      ; The following prints "\r\n".
 ScanNum:        CALL BusyRead:      ; Read a character
                 LODD 4092           ; Lodd the character to AC
                 SUBD ASCII_0:       ; Convert it into the corresponding digit
-                PUSH                ; Push the digit to the stack
+                PUSH                ; Push the digit onto the stack
 NextDigit:      CALL BusyRead:      ; Read a character
                 LODD 4092           ;
                 STOD next_char:     ; Store the character
@@ -88,7 +88,7 @@ BusyRead:       LODD 4093           ; Buzy waiting read
 
 ; @brief Shifts the left 8 bits to the right.
 ; @param m[sp + 1] The 2-chars to be processed.
-SwapChars:      LOCO 8              ; ac := 8
+SwapChars:      LOCO 8              ; ac = 8
 Loop1:          JZER Finish:        ;
                 SUBD C1:            ;
                 STOD loop_count:    ; loop_count--;
@@ -101,15 +101,15 @@ Add1:           ADDL 1              ; Equivalent to: ac <<= 1
 StoreNewChars:  STOL 1              ; m[sp + 1] = ac
                 LODD loop_count:    ; Continue next loop
                 JUMP Loop1:         ;
-Finish:         LODL 1              ; ac := m[sp + 1]
+Finish:         LODL 1              ; ac = m[sp + 1]
                 RETN                ; Return m[sp + 1]
 
 ; @brief Adds the two numbers. The result is stored to AC.
 ; @return ac The result of num1 + num2
-AddNums:        LODD num1:          ; ac := num1
-                PUSH                ; Push num1 to the stack
-                LODD num2:          ; ac := num2
-                ADDL 0              ; ac := num1 + num2
+AddNums:        LODD num1:          ; ac = num1
+                PUSH                ; Push num1 onto the stack
+                LODD num2:          ; ac = num2
+                ADDL 0              ; ac = num1 + num2
                 INSP 1              ; Clear the stack (!)
                 RETN                ; Return
 
@@ -118,37 +118,35 @@ AddNums:        LODD num1:          ; ac := num1
 ; 1234 -> ['2', '1'], ['4', '3'], ['\0', '\0']
 ; 456 -> ['5', '4'], ['\0', '6']
 ; But: 1234 -> ['4', '3'], []
-PrintNum:       STOD temp_num:      ;
-                LODD C10:           ;
-                PUSH                ; Divisor: 10
-                LODD temp_num:      ;
-                PUSH                ; Dividend: temp_num
-                DIV                 ; temp_num /= 10
-                POP                 ; ac := quotient
-                STOD temp_num:      ; temp_num := quotient
-                POP                 ; ac := remainder
-                ADDD ASCII_0:       ; Convert it into the corresponding char
-                STOD high_char:     ; high_char:= char
-                LODD C10:           ;
-                PUSH                ; Divisor: 10
-                LODD temp_num:      ;
-                PUSH                ; Dividend: temp_num
-                DIV                 ;
-                POP                 ; ac := quotient
-                STOD temp_num:      ; temp_unm := quotient
-                POP                 ; ac := remainder
-                ADDD ASCII_0:       ; Convert it into the corresponding char
+PrintNum:       STOD temp_num:      ; Store the number to print to temp_num
+PrintNumLoop:   CALL NextDigitChar: ; Get the next digit char
+                PUSH                ;
+                CALL SwapChars      ; Left shift the char to get the high char
+                STOD high_char      ; Save it to high_char
+                CALL NextDigitChar: ; Get the next digit char
                 PUSH                ; Push the char onto stack
-                LODD high_char:     ;
-                PUSh                ; Push high_char onto stack
-                CALL SwapChars:     ; Left shift the high character 8 bits
-                POP                 ; Pop the shifted high character to AC
-                LODL 0              ; ac := (high_char << 8) + low_char
+                LODD high_char:     ; ac := high_char
+                ADDL 0              ; ac = high_char + low_char
                 INSP 1              ; Clear the stack
                 RETN                ; Return
+                
+LS8Finish:      RETN
 
-; @brief Exit the program
-Exit:           HALT
+; @brief Divides temp_num by 10, and return the remainder as corresponding char.
+NextDigitChar:  LODD C10:           ;
+                PUSH                ; Divisor: 10
+                LODD temp_num:      ; Load the temporary number
+                PUSH                ; Dividend: temp_num
+                DIV                 ; temp_num /= 10
+                POP                 ; ac = quotient
+                STOD temp_num       ; temp_num = quotient
+                POP                 ; ac = remainder
+                ADDD ASCII_0:       ; Convert it into the corresponding char
+                RETN                ; Return
+
+; @brief Exit the program.
+Exit:           HALT                ;
+                JUMP Exit:          ; Forever halt
 
 .LOC 200                            ; <Constants>
 ON:             8                   ; MIC-1 on signal
@@ -167,6 +165,6 @@ num1:           0                   ; The first addend
 num2:           0                   ; The second addend
 num_ptr:        num1:               ; Pointer to the number to process
 num_count:      1                   ; The count of remaining numbers to read
-loop_count:     0                   ; Loop counts used in SwapChars
+loop_count:     0                   ; Loop counts
 temp_num:       0                   ; [507] Temporary number used in PrintNum
 high_char:      0                   ; [508] High character used in PrintNum

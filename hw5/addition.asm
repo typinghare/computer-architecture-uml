@@ -129,7 +129,8 @@ ResolveChars:   LODD temp_num:      ;
                 PUSH                ; Push it onto the stack
                 LODD res_char_ptr:  ; Load the pointer to the next res_char
                 POPI                ; Pop the next digit char to res_char
-                SUBD C1:            ; res_char_ptr -= 1
+                SUBD C1:            ;
+                STOD res_char_ptr:  ; res_char_ptr -= 1
                 JUMP ResolveChars:  ; Contninue to resolve temp_num
 RCDone:         RETN
 
@@ -183,7 +184,7 @@ num2:           0                   ; The second addend
 num_ptr:        num1:               ; Pointer to the number to process
 num_count:      1                   ; The count of remaining numbers to read
 loop_count:     0                   ; Loop counts used in some functions
-temp_num:       0                   ; [508] Temporary number
+temp_num:       0                   ; Temporary number
 high_char:      0                   ; High character used in PrintNum
 res_char_0:     0                   ; [509]
 res_char_1:     0

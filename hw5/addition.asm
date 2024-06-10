@@ -5,6 +5,8 @@ Start:          LOCO PROMPT:        ;
                 CALL PrintStr:      ; Print the prmopt string
                 CALL ScanNum:       ; Scan the second number
                 CALL AddNums:       ; Add the two numbers
+                LOCO MESSAGE:       ;
+                CALL PrintStr:      ; Print the result message
                 CALL PrintNum:      ; Print the sum
                 JUMP Exit:          ; Exit the program
 
@@ -195,7 +197,8 @@ ASCII_CR:       13                  ; '\r'
 C1:             1                   ; Constant 1
 C10:            10                  ; Constant 10
 C255:           255                 ; Constant 255
-PROMPT:         "Please input a 1-5 digit number followed by enter: "
+PROMPT:         "Please enter an integer between 1 and 32767: "
+MESSAGE:        "The sum of these integers is: "
 
 .LOC 500                            ; <Variables>
 str_ptr:        0                   ; Pointer to character to print

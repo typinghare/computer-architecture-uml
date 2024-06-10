@@ -118,7 +118,7 @@ AddNums:        LODD num1:          ; ac = num1
 PrintNum:       STOD temp_num:      ; Store the number to print to temp_num
                 CALL ResolveChars:  ; Resolve chars
                 CALL Resolve2Chars: ; Resolve 2chars
-                LOCO chars_arr      ;
+                LOCO chars_arr:     ;
                 PrintStr            ; Print the number
                 RETN                ; Return
 

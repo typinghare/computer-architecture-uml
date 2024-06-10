@@ -5,6 +5,7 @@ Start:          LOCO prompt:        ;
                 CALL PrintStr:      ; Print the prompt string
                 CALL ScanNum:       ; Scan the second number
                 CALL AddNums:       ; Add the two numbers
+                CALL PrintNum:      ; Print the sum
 
 ; @brief Prints a string.
 ; @param r[ac] The address of the string to print.

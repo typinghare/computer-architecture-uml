@@ -130,16 +130,14 @@ ResolveChars:   LODD temp_num:      ;
                 CALL NextDigitChar: ; Get the next digit char
                 PUSH                ; Push it onto the stack
                 LODD char_stack_ptr:; Load the pointer to the next res_char
+                ADDD C1:            ;
+                STOD char_stack_ptr:; char_stack_ptr++
                 POPI                ; Pop the next digit char to res_char
-                SUBD C1:            ;
-                STOD char_stack_ptr:; char_stack_ptr -= 1
                 JUMP ResolveChars:  ; Contninue to resolve temp_num
-RCDone:         LODD char_stack_ptr:;
-                ADDD C1:            ; Make sure char_stack_ptr point to the first
-                STOD char_stack_ptr:; available character
-                RETN
+RCDone:         RETN
 
-; @brief Convert chars in the res_char stack to 2-chars and put them
+; @brief Convert chars in the res_char stack to 2-chars and put them to the
+;        2chars array (see 2chars-arr)
 Resolve2Chars:  HALT
 
 ; @brief Gets the next 2-char.
@@ -194,13 +192,14 @@ num_count:      1                   ; The count of remaining numbers to read
 loop_count:     0                   ; Loop counts used in some functions
 temp_num:       0                   ; Temporary number
 high_char:      0                   ; High character used in PrintNum
-char_stack_top: 0                   ; [509]
+char_stack_top: 0                   ; [509] Char stack
                 0
                 0
                 0
-char_stack_bot: 0
-char_stack_ptr:   char_stack_bot:
-res_2chars_0:   0
-res_2chars_1:   0
-res_2chars_3:   0
-res_2chars_ptr: res_2chars_0:
+                0
+char_stack_bot: -1
+char_stack_ptr: char_stack_bot:
+2chars_arr:     0
+                0
+                0
+2chars_ptr:     2chars_arr:

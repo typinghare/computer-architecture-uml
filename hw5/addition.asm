@@ -124,7 +124,7 @@ PrintNum:       STOD temp_num:      ; Store the number to print to temp_num
 
 ; @brief
 ResolveChars:   LODD temp_num:      ;
-                JNER RCDone:        ; Return if temp_num == 0
+                JZER RCDone:        ; Return if temp_num == 0
                 CALL NextDigitChar: ; Get the next digit char
                 PUSH                ; Push it onto the stack
                 LODL res_char_ptr:  ; Load the pointer to the next res_char

@@ -5,9 +5,10 @@ Start:          LOCO PROMPT:        ;
                 CALL PrintStr:      ; Print the prmopt string
                 CALL ScanNum:       ; Scan the second number
                 CALL AddNums:       ; Add the two numbers
-                HALT
+                PUSH                ; Push the result onto stack
                 LOCO MESSAGE:       ;
                 CALL PrintStr:      ; Print the result message
+                POP                 ; Pop the result to AC
                 CALL PrintNum:      ; Print the sum
                 JUMP Exit:          ; Exit the program
 

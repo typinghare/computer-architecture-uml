@@ -146,7 +146,7 @@ Resolve2Chars:  LODD char_stack_ptr:;
                 PUSH                ; Push m[char_stack_ptr] onto stack
                 LODD chars_ptr:     ; Load the 2-chars pointer
                 POPI                ; Pop m[char_stack_ptr] to &char_ptr
-                LODL char_stack_ptr:;
+                LODD char_stack_ptr:;
                 ADDD C1:            ;
                 STOD char_stack_ptr:; char_stack_ptr++;
                 PSHI                ;
@@ -162,22 +162,7 @@ Resolve2Chars:  LODD char_stack_ptr:;
                 LODD chars_ptr:     ;
                 POPI                ; Pop the combined 2-chars to &char_ptr
                 JUMP Resolve2Chars: ; Continue to resolve remaining 2-chars
-R2CDone:        RETN                ;
-
-; @brief Gets the next 2-char.
-; @return ac The next 2-char. If temp_num is 0 then return 0; if temp_num has
-;            only one digit, then only return the low char.
-Next2Char:      CALL NextDigitChar: ; Get the next digit char
-                PUSH                ; Push the char onto stack
-                CALL SwapChars:     ; Left shift the char to get the high char
-                POP                 ; Pop to get the shifted char
-                STOD high_char:     ; Save it to high_char
-                CALL NextDigitChar: ; Get the next digit char
-                PUSH                ; Push the char onto stack
-                LODD high_char:     ; ac := high_char
-                ADDL 0              ; ac = high_char + low_char
-                INSP 1              ; Clear the stack
-                RETN                ; Return
+R2CDone:        RETN                ; Return
 
 ; @brief Divides temp_num by 10, and return the remainder as corresponding char.
 NextDigitChar:  LODD C10:           ; ac = 10

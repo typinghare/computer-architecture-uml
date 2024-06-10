@@ -115,12 +115,11 @@ AddNums:        LODD num1:          ; ac = num1
 
 ; @brief Prints a number in the string form of base 10.
 ; @param ac The number to print.
-; 1234 -> ['2', '1'], ['4', '3'], ['\0', '\0']
-; 456 -> ['5', '4'], ['\0', '6']
-; But: 1234 -> ['4', '3'], []
 PrintNum:       STOD temp_num:      ; Store the number to print to temp_num
                 CALL ResolveChars:  ; Resolve chars
                 CALL Resolve2Chars: ; Resolve 2chars
+                LOCO chars_arr      ;
+                PrintStr            ; Print the number
                 RETN                ; Return
 
 ; @brief Converts each digit in temp_num to corresponding digit char, and push
@@ -158,9 +157,10 @@ Resolve2Chars:  LODD char_stack_ptr:;
                 CALL SwapChars:     ; Left shift the char to get the high char
                 POP                 ; Pop to get the shifted char (high char)
                 ADDL 0              ; ac = high_char + low_char
-                PUSH                ;
+                INSP 1              ; Clear the stack
+                PUSH                ; Push the result onto stack
                 LODD chars_ptr:     ;
-                POPI                ; Pop the combined 2-chars to &char_ptr
+                POPI                ; Pop the result to &char_ptr
                 LODD char_stack_ptr:;
                 ADDD C1:            ;
                 STOD char_stack_ptr:; char_stack_ptr++;

@@ -139,7 +139,7 @@ RCDone:         RETN
 
 ; @brief Convert chars in the res_char stack to 2-chars and put them to the
 ;        2chars array (see chars-arr).
-Resolve2Chars:  LODL char_stack_ptr:;
+Resolve2Chars:  LODD char_stack_ptr:;
                 PSHI                ;
                 POP                 ; ac = m[char_stack_ptr]
                 JNEG R2CDone:       ; Out of stack

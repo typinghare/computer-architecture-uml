@@ -152,10 +152,10 @@ Resolve2Chars:  LODD char_stack_ptr:;
                 POP                 ; ac = m[char_stack_ptr]
                 JNEG R2CDone:       ; Out of stack
                 PUSH                ; Push m[char_stack_ptr] onto stack
+                CALL SwapChars:     ; Left shift the char to get the high char
                 LODD chars_ptr:     ; Load the 2-chars pointer
                 PSHI                ; Push m[chars_ptr] onto stack
-                CALL SwapChars:     ; Left shift the char to get the high char
-                POP                 ; Pop to get the shifted char (high char)
+                POP                 ; Pop to get the low char
                 ADDL 0              ; ac = high_char + low_char
                 INSP 1              ; Clear the stack
                 PUSH                ; Push the result onto stack
@@ -206,15 +206,14 @@ num_ptr:        num1:               ; Pointer to the number to process
 num_count:      1                   ; The count of remaining numbers to read
 loop_count:     0                   ; Loop counts used in some functions
 temp_num:       0                   ; Temporary number
-high_char:      0                   ; High character used in PrintNum
-char_stack_top: 0                   ; [509] Char stack
+char_stack_top: 0                   ; [508] Char stack
                 0                   ;
                 0                   ;
                 0                   ;
                 0                   ;
 char_stack_bot: -1                  ;
 char_stack_ptr: char_stack_bot:     ;
-chars_arr:      0                   ; [516]
+chars_arr:      0                   ; [515]
                 0                   ;
                 0                   ;
 chars_ptr:      chars_arr:          ;

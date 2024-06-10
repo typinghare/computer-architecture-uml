@@ -138,8 +138,31 @@ ResolveChars:   LODD temp_num:      ;
 RCDone:         RETN
 
 ; @brief Convert chars in the res_char stack to 2-chars and put them to the
-;        2chars array (see chars-arr)
-Resolve2Chars:  HALT
+;        2chars array (see chars-arr).
+Resolve2Chars:  LODL char_stack_ptr:;
+                PSHI                ;
+                POP                 ; ac = m[char_stack_ptr]
+                JNEG R2CDone:       ; Out of stack
+                PUSH                ; Push m[char_stack_ptr] onto stack
+                LODD chars_ptr:     ; Load the 2-chars pointer
+                POPI                ; Pop m[char_stack_ptr] to &char_ptr
+                LODL char_stack_ptr:;
+                ADDD C1:            ;
+                STOD char_stack_ptr:; char_stack_ptr++;
+                PSHI                ;
+                POP                 ; ac = m[char_stack_ptr]
+                JNEG R2CDone:       ; Out of stack
+                PUSH                ; Push m[char_stack_ptr] onto stack
+                LODD chars_ptr:     ; Load the 2-chars pointer
+                PSHI                ; Push m[chars_ptr] onto stack
+                CALL SwapChars:     ; Left shift the char to get the high char
+                POP                 ; Pop to get the shifted char (high char)
+                ADDL 0              ; ac = high_char + low_char
+                PUSH                ;
+                LODD chars_ptr:     ;
+                POPI                ; Pop the combined 2-chars to &char_ptr
+                JUMP Resolve2Chars: ; Continue to resolve remaining 2-chars
+R2CDone:        RETN                ;
 
 ; @brief Gets the next 2-char.
 ; @return ac The next 2-char. If temp_num is 0 then return 0; if temp_num has

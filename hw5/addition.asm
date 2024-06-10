@@ -121,8 +121,8 @@ AddNums:        LODD num1:          ; ac = num1
 PrintNum:       STOD temp_num:      ; Store the number to print to temp_num
 PrintNumLoop:   CALL NextDigitChar: ; Get the next digit char
                 PUSH                ;
-                CALL SwapChars      ; Left shift the char to get the high char
-                STOD high_char      ; Save it to high_char
+                CALL SwapChars:     ; Left shift the char to get the high char
+                STOD high_char:     ; Save it to high_char
                 CALL NextDigitChar: ; Get the next digit char
                 PUSH                ; Push the char onto stack
                 LODD high_char:     ; ac := high_char
@@ -139,7 +139,7 @@ NextDigitChar:  LODD C10:           ;
                 PUSH                ; Dividend: temp_num
                 DIV                 ; temp_num /= 10
                 POP                 ; ac = quotient
-                STOD temp_num       ; temp_num = quotient
+                STOD temp_num:      ; temp_num = quotient
                 POP                 ; ac = remainder
                 ADDD ASCII_0:       ; Convert it into the corresponding char
                 RETN                ; Return

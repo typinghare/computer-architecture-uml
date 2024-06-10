@@ -1,19 +1,17 @@
-Start:          CALL PrintPrompt:   ; Print the prompt string
+Start:          LOCO prompt:        ;
+                CALL PrintStr:      ; Print the prompt string
                 CALL ScanNum:       ; Scan the first number
-                CALL PrintPrompt:   ; Print the prompt string
+                LOCO prompt:        ;
+                CALL PrintStr:      ; Print the prompt string
                 CALL ScanNum:       ; Scan the second number
                 CALL AddNums:       ; Add the two numbers
 
-PrintPrompt:    LODD on:            ;
-                STOD 4095           ;
-                CALL BusyWrite:     ;
-                LOCO prompt:        ;
-                CALL PrintStr:      ; Print the prompt string
-                RETN
-
 ; @brief Prints a string.
 ; @param r[ac] The address of the string to print.
-PrintStr:       PSHI                ; Push the first 2-chars to stack
+PrintStr:       LODD on:            ;
+                STOD 4095           ; Prepare for buffer writing
+                CALL BusyWrite:     ;
+                PSHI                ; Push the first 2-chars to stack
                 ADDD c1:            ; Increment the address in AC by 1
                 STOD str_ptr:       ; Save the address of the next 2-chars
                 POP                 ; Pop the first 2-chars to AC
@@ -103,7 +101,16 @@ Finish:         LODL 1              ; ac := m[sp + 1]
                 RETN                ; Return m[sp + 1]
 
 ; @brief Adds the two numbers. The result is stored to AC.
-AddNums:        HALT                ;
+; @return ac The result of num1 + num2
+AddNums:        LODD num1:          ;
+                PUSH                ;
+                LODD num2:          ;
+                ADDL 0              ; ac := num1 + num2
+                RETN
+
+; @brief Prints a number in the string form of base 10.
+; @param ac The number to print.
+PrintNum:       HALT                ;
 
 .LOC 200                            ; <Constants>
 on:             8                   ; MIC-1 on signal

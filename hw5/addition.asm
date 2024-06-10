@@ -110,7 +110,7 @@ AddNums:        LODD num1:          ; ac = num1
                 PUSH                ; Push num1 onto the stack
                 LODD num2:          ; ac = num2
                 ADDL 0              ; ac = num1 + num2
-                INSP 1              ; Clear the stack (!)
+                INSP 1              ; Clear the stack
                 RETN                ; Return
 
 ; @brief Prints a number in the string form of base 10.
@@ -122,17 +122,25 @@ PrintNum:       STOD temp_num:      ; Store the number to print to temp_num
                 CALL ResolveChars:  ; Resolve chars
                 RETN                ; Return
 
-; @brief
+; @brief Converts each digit in temp_num to corresponding digit char, and push
+;        it onto the res_char stack (see char_stack). When return,
+;        char_stack_ptr is ensured to point to the first non-zero character.
 ResolveChars:   LODD temp_num:      ;
                 JZER RCDone:        ; Return if temp_num == 0
                 CALL NextDigitChar: ; Get the next digit char
                 PUSH                ; Push it onto the stack
-                LODD res_char_ptr:  ; Load the pointer to the next res_char
+                LODD char_stack_ptr:; Load the pointer to the next res_char
                 POPI                ; Pop the next digit char to res_char
                 SUBD C1:            ;
-                STOD res_char_ptr:  ; res_char_ptr -= 1
+                STOD char_stack_ptr:; char_stack_ptr -= 1
                 JUMP ResolveChars:  ; Contninue to resolve temp_num
-RCDone:         RETN
+RCDone:         LODD char_stack_ptr:;
+                ADDD C1:            ; Make sure char_stack_ptr point to the first
+                STOD char_stack_ptr:; available character
+                RETN
+
+; @brief Convert chars in the res_char stack to 2-chars and put them
+Resolve2Chars:
 
 ; @brief Gets the next 2-char.
 ; @return ac The next 2-char. If temp_num is 0 then return 0; if temp_num has
@@ -186,12 +194,13 @@ num_count:      1                   ; The count of remaining numbers to read
 loop_count:     0                   ; Loop counts used in some functions
 temp_num:       0                   ; Temporary number
 high_char:      0                   ; High character used in PrintNum
-res_char_0:     0                   ; [509]
-res_char_1:     0
-res_char_2:     0
-res_char_3:     0
-res_char_4:     0
-res_char_ptr:   res_char_4:
-res_2char_0:    0
-res_2char_1:    0
-res_2char_3:    0
+char_stack_top: 0                   ; [509]
+                0
+                0
+                0
+char_stack_bot: 0
+char_stack_ptr:   char_stack_bot:
+res_2chars_0:   0
+res_2chars_1:   0
+res_2chars_3:   0
+res_2chars_ptr: res_2chars_0:

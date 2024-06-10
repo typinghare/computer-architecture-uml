@@ -161,13 +161,13 @@ Resolve2Chars:  LODD char_stack_ptr:;
                 PUSH                ;
                 LODD chars_ptr:     ;
                 POPI                ; Pop the combined 2-chars to &char_ptr
-                JUMP Resolve2Chars: ; Continue to resolve remaining 2-chars
                 LODD char_stack_ptr:;
                 ADDD C1:            ;
                 STOD char_stack_ptr:; char_stack_ptr++;
                 LODD chars_ptr:     ;
                 ADDD C1:            ;
                 STOD chars_ptr:     ; chars_ptr++;
+                JUMP Resolve2Chars: ; Continue to resolve remaining 2-chars
 R2CDone:        RETN                ; Return
 
 ; @brief Divides temp_num by 10, and return the remainder as corresponding char.
@@ -208,13 +208,13 @@ loop_count:     0                   ; Loop counts used in some functions
 temp_num:       0                   ; Temporary number
 high_char:      0                   ; High character used in PrintNum
 char_stack_top: 0                   ; [509] Char stack
-                0
-                0
-                0
-                0
-char_stack_bot: -1
-char_stack_ptr: char_stack_bot:
-chars_arr:      0
-                0
-                0
-chars_ptr:      chars_arr:
+                0                   ;
+                0                   ;
+                0                   ;
+                0                   ;
+char_stack_bot: -1                  ;
+char_stack_ptr: char_stack_bot:     ;
+chars_arr:      0                   ; [516]
+                0                   ;
+                0                   ;
+chars_ptr:      chars_arr:          ;

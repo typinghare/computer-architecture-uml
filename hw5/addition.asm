@@ -129,7 +129,7 @@ ResolveChars:   LODD temp_num:      ;
                 PUSH                ; Push it onto the stack
                 LODD res_char_ptr:  ; Load the pointer to the next res_char
                 POPI                ; Pop the next digit char to res_char
-                ADDD c1:            ; res_char_ptr += 1
+                ADDD C1:            ; res_char_ptr += 1
                 JUMP ResolveChars:  ; Contninue to resolve temp_num
 RCDone:         RETN
 

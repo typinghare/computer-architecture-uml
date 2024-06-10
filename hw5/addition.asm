@@ -5,11 +5,15 @@ Start:          LOCO PROMPT:        ;
                 CALL PrintStr:      ; Print the prmopt string
                 CALL ScanNum:       ; Scan the second number
                 CALL AddNums:       ; Add the two numbers
+                JNEG Overflow:      ; Overflow case
                 PUSH                ; Push the result onto stack
-                LOCO MESSAGE:       ;
-                CALL PrintStr:      ; Print the result message
+                LOCO SUCESS_MSG:    ;
+                CALL PrintStr:      ; Print the sucess message
                 POP                 ; Pop the result to AC
                 CALL PrintNum:      ; Print the sum
+                JUMP Exit:          ; Exit the program
+Overflow:       LOCO OVERFLOW_MSG:  ;
+                CALL PrintStr:      ; Print the overflow message
                 JUMP Exit:          ; Exit the program
 
 ; @brief Prints a string.
@@ -200,7 +204,8 @@ C1:             1                   ; Constant 1
 C10:            10                  ; Constant 10
 C255:           255                 ; Constant 255
 PROMPT:         "Please enter an integer between 1 and 32767: "
-MESSAGE:        "The sum of these integers is: "
+SUCESS_MSG:     "The sum of these integers is: "
+OVERFLOW_MSG:   ""
 
 .LOC 300                            ; <Variables>
 str_ptr:        0                   ; Pointer to character to print

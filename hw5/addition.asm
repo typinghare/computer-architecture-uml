@@ -12,7 +12,7 @@ Start:          LOCO prompt:        ;
 PrintStr:       LODD on:            ;
                 STOD 4095           ; Prepare for buffer writing
                 CALL BusyWrite:     ;
-                PSHI                ; Push the first 2-chars to stack
+PrintLoop:      PSHI                ; Push the first 2-chars to stack
                 ADDD c1:            ; Increment the address in AC by 1
                 STOD str_ptr:       ; Save the address of the next 2-chars
                 POP                 ; Pop the first 2-chars to AC
@@ -29,7 +29,7 @@ PrintStr:       LODD on:            ;
                 STOD 4094           ; Store the higher character to the buffer
                 CALL BusyWrite:     ; Wait until it is printed
                 LODD str_ptr:       ; Load the address of the next 2-chars to AC
-                JUMP PrintStr:      ; Continue to print the string
+                JUMP PrintLoop:     ; Continue to print the following chars
 CPrintCRLF:     INSP 1              ; Clean up the stack before printing CRLF
 PrintCRLF:      LODD ascii_cr:      ; The following prints "\r\n".
                 STOD 4094           ;
@@ -107,7 +107,7 @@ AddNums:        LODD num1:          ;
                 PUSH                ;
                 LODD num2:          ;
                 ADDL 0              ; ac := num1 + num2
-                RETN
+                RETN                ; Return
 
 ; @brief Prints a number in the string form of base 10.
 ; @param ac The number to print.

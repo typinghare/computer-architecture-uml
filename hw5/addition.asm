@@ -120,8 +120,9 @@ AddNums:        LODD num1:          ; ac = num1
 ; But: 1234 -> ['4', '3'], []
 PrintNum:       STOD temp_num:      ; Store the number to print to temp_num
 PrintNumLoop:   CALL NextDigitChar: ; Get the next digit char
-                PUSH                ;
+                PUSH                ; Push the char onto stack
                 CALL SwapChars:     ; Left shift the char to get the high char
+                POP                 ; Pop to get teh shifted char
                 STOD high_char:     ; Save it to high_char
                 CALL NextDigitChar: ; Get the next digit char
                 PUSH                ; Push the char onto stack

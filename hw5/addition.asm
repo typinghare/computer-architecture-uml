@@ -8,6 +8,7 @@ PrintPrompt:    LODD on:            ;
                 STOD 4095           ;
                 CALL BusyWrite:     ;
                 LOCO prompt:        ;
+                CALL PrintStr       ;
                 RETN                ; Return
 
 ; @brief Prints a string.

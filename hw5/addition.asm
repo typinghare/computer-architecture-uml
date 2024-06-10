@@ -1,18 +1,18 @@
-Start:          LOCO prompt:        ;
-                CALL PrintStr:      ; Print the prompt string
+Start:          CALL PrintPrompt:   ; Print the prompt string
                 CALL ScanNum:       ; Scan the first number
-                LOCO prompt:        ;
-                CALL PrintStr:      ; Print the prompt string
+                CALL PrintPrompt:   ; Print the prompt string
                 CALL ScanNum:       ; Scan the second number
                 CALL AddNums:       ; Add the two numbers
-                CALL PrintNum:      ; Print the sum
+
+PrintPrompt:    LODD on:            ;
+                STOD 4095           ;
+                CALL BusyWrite:     ;
+                LOCO prompt:        ;
+                RETN                ; Return
 
 ; @brief Prints a string.
 ; @param r[ac] The address of the string to print.
-PrintStr:       LODD on:            ;
-                STOD 4095           ; Prepare for buffer writing
-                CALL BusyWrite:     ;
-PrintLoop:      PSHI                ; Push the first 2-chars to stack
+PrintStr:       PSHI                ; Push the first 2-chars to stack
                 ADDD c1:            ; Increment the address in AC by 1
                 STOD str_ptr:       ; Save the address of the next 2-chars
                 POP                 ; Pop the first 2-chars to AC
@@ -29,12 +29,12 @@ PrintLoop:      PSHI                ; Push the first 2-chars to stack
                 STOD 4094           ; Store the higher character to the buffer
                 CALL BusyWrite:     ; Wait until it is printed
                 LODD str_ptr:       ; Load the address of the next 2-chars to AC
-                JUMP PrintLoop:     ; Continue to print the following chars
+                JUMP PrintStr:      ; Continue to print the string
 CPrintCRLF:     INSP 1              ; Clean up the stack before printing CRLF
 PrintCRLF:      LODD ascii_cr:      ; The following prints "\r\n".
                 STOD 4094           ;
                 CALL BusyWrite:     ; Print '\r'
-                LODD ascii_nl:      ;
+                LODD asciinl:       ;
                 STOD 4094           ;
                 CALL BusyWrite:     ; Print '\n'
                 LODD on:            ;
@@ -45,16 +45,16 @@ PrintCRLF:      LODD ascii_cr:      ; The following prints "\r\n".
 ;        or num2 according to num_ptr.
 ScanNum:        call BusyRead:      ; Read a character
                 LODD 4092           ; Lodd the character to AC
-                SUBD ascii_0:       ; Convert it into the corresponding digit
+                SUBD ascii0:        ; Convert it into the corresponding digit
                 PUSH                ; Push the digit to the stack
 NextDigit:      CALL BusyRead:      ; Read a character
                 LODD 4092           ;
                 STOD next_char:     ; Store the character
-                SUBD ascii_nl:      ;
+                SUBD asciinl:       ;
                 JZER EndNum:        ; If the character is '\n', it ends reading
                 MULT 10             ; Base 10 left shift
                 LODD next_char:     ; Load the next character to AC
-                SUBD ascii_0:       ; Convert it into the corresponding digit
+                SUBD ascii0:        ; Convert it into the corresponding digit
                 ADDL 0              ; Add m[sp] to it
                 STOL 0              ; Store the result to m[sp]
                 JUMP NextDigit:     ; Continue to read the next digit
@@ -73,13 +73,13 @@ EndNum:         LODD num_ptr:       ;
 
 ; @brief Writes a character to the buffer; wait until m[4095] >= 10.
 BusyWrite:      LODD 4095           ;
-                SUBD ascii_nl:      ;
+                SUBD asciinl:       ;
                 JNEG BusyWrite:     ;
                 RETN                ; Return
 
 ; @brief Reads a character into the buffer; wait until m[4093] >= 10.
-BusyRead:       LODD 4093           ;
-                SUBD ascii_nl:      ;
+BusyRead:       LODD 4093           ; Buzy waiting read
+                SUBD asciinl:       ;
                 JNEG BusyRead:      ;
                 RETN                ; Return
 
@@ -102,16 +102,7 @@ Finish:         LODL 1              ; ac := m[sp + 1]
                 RETN                ; Return m[sp + 1]
 
 ; @brief Adds the two numbers. The result is stored to AC.
-; @return ac The result of num1 + num2
-AddNums:        LODD num1:          ;
-                PUSH                ;
-                LODD num2:          ;
-                ADDL 0              ; ac := num1 + num2
-                RETN                ; Return
-
-; @brief Prints a number in the string form of base 10.
-; @param ac The number to print.
-PrintNum:       HALT                ;
+AddNums:        HALT                ;
 
 .LOC 200                            ; <Constants>
 on:             8                   ; MIC-1 on signal

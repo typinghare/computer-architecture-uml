@@ -137,7 +137,7 @@ ResolveChars:   LODD temp_num:      ;
 RCDone:         RETN
 
 ; @brief Convert chars in the res_char stack to 2-chars and put them to the
-;        2chars array (see 2chars-arr)
+;        2chars array (see chars-arr)
 Resolve2Chars:  HALT
 
 ; @brief Gets the next 2-char.
@@ -199,7 +199,7 @@ char_stack_top: 0                   ; [509] Char stack
                 0
 char_stack_bot: -1
 char_stack_ptr: char_stack_bot:
-2chars_arr:     0
+chars_arr:      0
                 0
                 0
-2chars_ptr:     2chars_arr:
+chars_ptr:      chars_arr:

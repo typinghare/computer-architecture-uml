@@ -1,8 +1,8 @@
 Start:          LOCO PROMPT:        ;
-                CALL PrintStr:      ; Print the PROMPT string
+                CALL PrintStr:      ; Print the prmopt string
                 CALL ScanNum:       ; Scan the first number
                 LOCO PROMPT:        ;
-                CALL PrintStr:      ; Print the PROMPT string
+                CALL PrintStr:      ; Print the prmopt string
                 CALL ScanNum:       ; Scan the second number
                 CALL AddNums:       ; Add the two numbers
                 CALL PrintNum:      ; Print the sum
@@ -122,19 +122,25 @@ PrintNum:       STOD temp_num:      ; Store the number to print to temp_num
 PrintNumLoop:   CALL NextDigitChar: ; Get the next digit char
                 PUSH                ; Push the char onto stack
                 CALL SwapChars:     ; Left shift the char to get the high char
-                POP                 ; Pop to get teh shifted char
+                POP                 ; Pop to get the shifted char
                 STOD high_char:     ; Save it to high_char
                 CALL NextDigitChar: ; Get the next digit char
                 PUSH                ; Push the char onto stack
                 LODD high_char:     ; ac := high_char
                 ADDL 0              ; ac = high_char + low_char
                 INSP 1              ; Clear the stack
+                STOD result_0:      ;
+                LOCO result_0:      ; Load the address
+                CALL PrintStr:      ;
                 RETN                ; Return
-                
-LS8Finish:      RETN
+
+; @brief Get the next 2-char.
+; @return ac The next 2-char. If temp_num is 0 then return 0; if temp_num has
+;            only one digit, then only return the low char.
+Next2Char:      HALT
 
 ; @brief Divides temp_num by 10, and return the remainder as corresponding char.
-NextDigitChar:  LODD C10:           ;
+NextDigitChar:  LODD C10:           ; ac = 10
                 PUSH                ; Divisor: 10
                 LODD temp_num:      ; Load the temporary number
                 PUSH                ; Dividend: temp_num
@@ -143,6 +149,7 @@ NextDigitChar:  LODD C10:           ;
                 STOD temp_num:      ; temp_num = quotient
                 POP                 ; ac = remainder
                 ADDD ASCII_0:       ; Convert it into the corresponding char
+                INSP 2              ; Clear the stack
                 RETN                ; Return
 
 ; @brief Exit the program.
@@ -169,3 +176,6 @@ num_count:      1                   ; The count of remaining numbers to read
 loop_count:     0                   ; Loop counts
 temp_num:       0                   ; [507] Temporary number used in PrintNum
 high_char:      0                   ; [508] High character used in PrintNum
+result_0:       0
+result_1:       0
+result_2:       0

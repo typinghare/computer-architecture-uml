@@ -5,6 +5,7 @@ Start:          LOCO PROMPT:        ;
                 CALL PrintStr:      ; Print the prmopt string
                 CALL ScanNum:       ; Scan the second number
                 CALL AddNums:       ; Add the two numbers
+                HALT
                 LOCO MESSAGE:       ;
                 CALL PrintStr:      ; Print the result message
                 CALL PrintNum:      ; Print the sum
@@ -30,7 +31,7 @@ PrintLoop:      PSHI                ; Push the first 2-chars to stack
                 INSP 1              ; Clear the stack
                 PUSH                ; Push the swaped 2-chars onto the stack
                 CALL BusyWrite:     ;
-                POP                 ; Pop the swapeed 2-chars to AC
+                POP                 ; Pop the swaped 2-chars to AC
                 STOD 4094           ; Store the higher character to the buffer
                 CALL BusyWrite:     ; Wait until it is printed
                 LODD str_ptr:       ; Load the address of the next 2-chars to AC
@@ -200,7 +201,7 @@ C255:           255                 ; Constant 255
 PROMPT:         "Please enter an integer between 1 and 32767: "
 MESSAGE:        "The sum of these integers is: "
 
-.LOC 500                            ; <Variables>
+.LOC 300                            ; <Variables>
 str_ptr:        0                   ; Pointer to character to print
 next_char:      0                   ; Next character
 num1:           0                   ; The first addend
@@ -209,14 +210,14 @@ num_ptr:        num1:               ; Pointer to the number to process
 num_count:      1                   ; The count of remaining numbers to read
 loop_count:     0                   ; Loop counts used in some functions
 temp_num:       0                   ; Temporary number
-char_stack_top: 0                   ; [508] Char stack
+char_stack_top: 0                   ; [308] Char stack
                 0                   ;
                 0                   ;
                 0                   ;
                 0                   ;
 char_stack_bot: -1                  ;
 char_stack_ptr: char_stack_bot:     ;
-chars_arr:      0                   ; [515]
+chars_arr:      0                   ; [315]
                 0                   ;
                 0                   ;
 chars_ptr:      chars_arr:          ;

@@ -119,7 +119,7 @@ PrintNum:       STOD temp_num:      ; Store the number to print to temp_num
                 CALL ResolveChars:  ; Resolve chars
                 CALL Resolve2Chars: ; Resolve 2chars
                 LOCO chars_arr:     ;
-                CALL PrintStr       ; Print the number
+                CALL PrintStr:      ; Print the number
                 RETN                ; Return
 
 ; @brief Converts each digit in temp_num to corresponding digit char, and push

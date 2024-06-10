@@ -128,7 +128,7 @@ PrintNum:       STOD temp_num:      ;
                 STOD temp_num:      ; temp_num := quotient
                 POP                 ; ac := remainder
                 ADDD ASCII_0:       ; Convert it into the corresponding char
-                STOD low_char:      ; low_char := char
+                STOD high_char:     ; high_char:= char
                 LODD C10:           ;
                 PUSH                ; Divisor: 10
                 LODD temp_num:      ;
@@ -139,8 +139,10 @@ PrintNum:       STOD temp_num:      ;
                 POP                 ; ac := remainder
                 ADDD ASCII_0:       ; Convert it into the corresponding char
                 PUSH                ; Push the char onto stack
-                CALL SwapChars:     ; Left shift the character
-                LODD low_char:     ; ac := low_char
+                LODD high_char:     ;
+                PUSh                ; Push high_char onto stack
+                CALL SwapChars:     ; Left shift the high character 8 bits
+                POP                 ; Pop the shifted high character to AC
                 LODL 0              ; ac := (high_char << 8) + low_char
                 INSP 1              ; Clear the stack
                 RETN                ; Return
@@ -166,5 +168,5 @@ num2:           0                   ; The second addend
 num_ptr:        num1:               ; Pointer to the number to process
 num_count:      1                   ; The count of remaining numbers to read
 loop_count:     0                   ; Loop counts used in SwapChars
-temp_num:       0                   ; Temporary number used in PrintNum
-low_char:       0                   ;
+temp_num:       0                   ; [507] Temporary number used in PrintNum
+high_char:      0                   ; [508] High character used in PrintNum

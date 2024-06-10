@@ -120,6 +120,7 @@ AddNums:        LODD num1:          ; ac = num1
 ; But: 1234 -> ['4', '3'], []
 PrintNum:       STOD temp_num:      ; Store the number to print to temp_num
                 CALL ResolveChars:  ; Resolve chars
+                CALL Resolve2Chars: ; Resolve 2chars
                 RETN                ; Return
 
 ; @brief Converts each digit in temp_num to corresponding digit char, and push
@@ -130,7 +131,7 @@ ResolveChars:   LODD temp_num:      ;
                 CALL NextDigitChar: ; Get the next digit char
                 PUSH                ; Push it onto the stack
                 LODD char_stack_ptr:; Load the pointer to the next res_char
-                ADDD C1:            ;
+                SUBD C1:            ;
                 STOD char_stack_ptr:; char_stack_ptr++
                 POPI                ; Pop the next digit char to res_char
                 JUMP ResolveChars:  ; Contninue to resolve temp_num

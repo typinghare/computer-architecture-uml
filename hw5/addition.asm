@@ -4,11 +4,11 @@ PrintPrompt:    LODD on:            ;
                 STOD 4095           ;
                 CALL BusyWrite:     ;
                 LOCO prompt:        ;
-                CALL PrintStr       ; Print the prompt string
-                CALL ScanNum        ; Scan the first number
-                CALL PrintStr       ; Print the prompt string
-                CALL ScanNum        ; Scan the second number
-                CALL AddNums        ; Add the two numbers
+                CALL PrintStr:      ; Print the prompt string
+                CALL ScanNum:       ; Scan the first number
+                CALL PrintStr:      ; Print the prompt string
+                CALL ScanNum:       ; Scan the second number
+                CALL AddNums:       ; Add the two numbers
 
 ; @brief Prints a string.
 ; @param r[ac] The address of the string to print.

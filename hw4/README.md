@@ -15,7 +15,7 @@ First of all, I went through the original `masm.c`, extended and refactored some
 
 Next, I extended the `lex.yy.ll` file by adding the tokens for the three macro instructions.
 
-Finally, I started to extend the microcode, which was the hardest part. The microcode for the `RSHIFT` instruction has been given in the helper directory, so I copied and pasted to my microprogram. The following is the microcode for the `MULT` instruction:
+Finally, I started to extend the microcode, which was the hardest part. The microcode for the `RSHIFT` instruction has been given in the helper directory, so I copied and pasted to my microprogram. The following is the microcode for the  `MULT` instruction:
 
 ```Pascal
 82:  a := lshift(1);                            { 1111 1111 00 = MULT }
@@ -44,7 +44,9 @@ Finally, I started to extend the microcode, which was the hardest part. The micr
 105: ac := -1; goto 0;                          { END: MULT }
 ```
 
-Lines 82 to 87 create a mask `111111` and perform a bitwise AND on the `ir` to obtain a 6-bit argument. Lines 89 to 91 access memory, storing the value from the top of the stack into register A. Line 92 initializes the result, storing it in register C. If the multiplier is zero, the result is written directly to the stack. Otherwise, since the multiplier is positive, the sign of the result should match the multiplicand's sign. Therefore, lines 94 to 96 store the multiplicand's sign in register D: 1 if positive, -1 if negative. A loop then calculates the result, ensuring the correct sign (lines 99 to 101). If there is an overflow, `ac` is set to -1; otherwise, the result is written back to the stack.
+Lines 82 to 87 create a mask `111111` and perform a bitwise AND on the
+`ir` to obtain a 6-bit argument. Lines 89 to 91 access memory, storing the value from the top of the stack into register A. Line 92 initializes the result, storing it in register C. If the multiplier is zero, the result is written directly to the stack. Otherwise, since the multiplier is positive, the sign of the result should match the multiplicand's sign. Therefore, lines 94 to 96 store the multiplicand's sign in register D: 1 if positive, -1 if negative. A loop then calculates the result, ensuring the correct sign (lines 99 to 101). If there is an overflow,
+`ac` is set to -1; otherwise, the result is written back to the stack.
 
 The following is the microcode for the `DIV` instruction:
 
@@ -94,7 +96,8 @@ The following is the microcode for the `DIV` instruction:
 156: goto 0;
 ```
 
-The microcode for this instruction is complicated, so I wrote a draft to `draft.txt`. Line 114 to 131 sets the following registers up:
+The microcode for this instruction is complicated, so I wrote a draft to
+`draft.txt`. Line 114 to 131 sets the following registers up:
 
 * Register A: the absolute value of the divisor
 * Register B: negative of the absolute value of the dividend
@@ -103,7 +106,7 @@ The microcode for this instruction is complicated, so I wrote a draft to `draft.
 * Register E: 0 (remainder)
 * Register F: 0 (quotient)
 
-Line 132 to 149 is associated with legal cases, in which a loop (line 133 to 136) is used to find the quotient and remainder. Line 137 to 140 make the remainder to positive. Line 141 to 149 adjust the remainder and quotient according to the signs of divisor and dividend, the math deduction of which is found in the draft. 
+Line 132 to 149 is associated with legal cases, in which a loop (line 133 to 136) is used to find the quotient and remainder. Line 137 to 140 make the remainder to positive. Line 141 to 149 adjust the remainder and quotient according to the signs of divisor and dividend, the math deduction of which is found in the draft.
 Line 150 and 151 is associated with the illegal cases, in which the accumulator is set to 0, and the remainder is -1.
 
 Line 152 to 155 pushes the remainder and quotient to the stack.
@@ -120,7 +123,8 @@ make test-div     # Run div.test.asm using mic1
 
 ## Resulting Output
 
-The resulting output of the unoptimized version is available in `output.txt`. It includes the output of the following commands in sequence:
+The resulting output is available in
+`output.txt`, which includes the output of the following commands in sequence:
 
 ```shell
 ./mic1 prom.dat rshift.test.obj 0 4000

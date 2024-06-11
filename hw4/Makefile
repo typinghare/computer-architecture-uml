@@ -22,7 +22,7 @@ STARTING_SP = 4000
 all: $(MASM) $(MC_PROM_DAT) $(RSHIFT_TEST_OBJ) $(MULT_TEST_OBJ) $(DIV_TEST_OBJ)
 
 %.o: %.c
-	$(C_COMPILER) -c -g $< -O3
+	$(C_COMPILER) -c -g $< -O2
 
 $(LEXER): lex.yy.ll
 	$(FLEX_COMPILER) $<

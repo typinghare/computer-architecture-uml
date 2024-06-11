@@ -1,5 +1,5 @@
-MASM = masm
-PROM_MRD_DAT = prom_mrd.dat
+MASM = masm_mrd
+PROM_DAT = prom_mrd.dat
 ADDITION_OBJ = addition.obj
 
 # Mic-1
@@ -9,7 +9,7 @@ STARTING_SP = 4000
 
 all: $(ADDITION_OBJ)
 
-run: $(PROM_MRD_DAT) $(ADDITION_OBJ)
+run: $(PROM_DAT) $(ADDITION_OBJ)
 	$(MIC1) $^ $(STARTING_PC) $(STARTING_SP)
 
 %.obj: %.asm

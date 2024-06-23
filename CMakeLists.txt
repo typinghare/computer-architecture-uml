@@ -18,4 +18,5 @@ add_executable(hw3-rfib hw3/rfib.c)
 # Homework 4
 add_executable(hw4-masm hw4/masm.c)
 
-# Homework 5
+# Homework 6
+add_executable(hw6-linker hw6/linker.c)

@@ -9,7 +9,7 @@
 #include "common.h"
 
 typedef struct instruction {
-    int line_number;
+    int addr;
     char bitstring[17];
     bool is_resolved;
     char* label;
@@ -23,7 +23,7 @@ typedef struct instruction_list {
 
 instruction_list_t* create_instruction_list();
 
-instruction_t* create_instruction(int line_number, const char* bitstring);
+instruction_t* create_instruction(int addr, const char* bitstring);
 
 void add_label(instruction_t* instruction, const char* label);
 
@@ -44,10 +44,10 @@ inline instruction_list_t* create_instruction_list() {
 }
 
 inline instruction_t*
-create_instruction(const int line_number, const char* bitstring) {
+create_instruction(const int addr, const char* bitstring) {
     instruction_t* instruction = malloc(sizeof(instruction_t));
     require_not_null(instruction, "instruction");
-    instruction->line_number = line_number;
+    instruction->addr = addr;
     strncpy(instruction->bitstring, bitstring, 16);
     instruction->is_resolved = true;
     instruction->label = NULL;
@@ -81,7 +81,7 @@ inline void dump_instruction_list(const instruction_list_t* instruction_list) {
         char* mark = instruction->is_resolved ? "" : "U";
         char* label = instruction->label == NULL ? "" : instruction->label;
         printf(
-            "\n%-4d %s%-4s  %s", instruction->line_number, mark,
+            "\n%-4d %s%-4s  %s", instruction->addr, mark,
             instruction->bitstring, label);
     }
     printf("\n------------------------------------------\n");

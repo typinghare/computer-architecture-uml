@@ -5,6 +5,9 @@
 #include <stdlib.h>
 #include <string.h>
 
+#define MIC1_MAX_ADDRESS 4095
+#define MIC1_MAX_ADDRESS_BITS 12
+
 /**
  * @brief Ensures that the given object pointer is not NULL.
  *
@@ -37,6 +40,7 @@ char* repeat(char c, int count);
 inline void require_not_null(const void* object, const char* name) {
     if (object == NULL) {
         perror(strcat("Null pointer: ", name));
+        exit(1);
     }
 }
 

@@ -194,11 +194,10 @@ void write_machine_code(
          instruction != NULL; instruction = instruction->next) {
         while (line_number < instruction->addr) {
             const char* halt = "1111111111111111\n";
-            fprintf(file, halt);
+            fprintf(file, "%s", halt);
             line_number++;
         }
-        fprintf(file, instruction->bitstring);
-        fprintf(file, "\n");
+        fprintf(file, "%s\n", instruction->bitstring);
         line_number++;
     }
 }

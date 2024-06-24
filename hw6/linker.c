@@ -28,10 +28,42 @@ content_t* file_to_content(const char* filename);
  */
 content_t* first_pass(content_t** contents, int num_contents);
 
+/**
+ * @brief Generates machine code from the given content.
+ *
+ * This function performs a second pass over the merged content, converting
+ * symbolic addresses into actual addresses, and generates a list of machine
+ * code instructions.
+ *
+ * @param first_pass_content The content_t structure from the first pass,
+ * containing merged instructions and symbols.
+ * @return instruction_list_t* Pointer to the list of machine code instructions.
+ */
 instruction_list_t* second_pass(const content_t* first_pass_content);
 
+/**
+ * @brief Converts an MIC-1 address (12 bits) to its binary string
+ * representation.
+ *
+ * This function takes an address as an integer and converts it to a binary
+ * string representation, ensuring the resulting string has a length of
+ * MIC1_MAX_ADDRESS_BITS.
+ *
+ * @param addr The address to be converted.
+ * @return char* Pointer to the binary string representation of the address.
+ */
 char* addr_to_bitstring(int addr);
 
+/**
+ * @brief Writes machine code instructions to a file.
+ *
+ * This function writes the machine code instructions from a list to the
+ * specified file. It ensures that the instructions are written in the correct
+ * order and fills any gaps with halt instructions.
+ *
+ * @param file The file to which the machine code will be written.
+ * @param machine_code_list The list of machine code instructions to be written.
+ */
 void write_machine_code(
     FILE* file, const instruction_list_t* machine_code_list);
 

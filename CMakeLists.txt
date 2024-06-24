@@ -19,12 +19,6 @@ add_executable(hw3-rfib hw3/rfib.c)
 add_executable(hw4-masm hw4/masm.c)
 
 # Homework 6
-add_executable(hw6-old-linker
-        hw6_old/linker.c
-        hw6_old/helper.h
-        hw6_old/symbol.h
-        hw6_old/instruction.h
-)
 add_executable(hw6-linker
         hw6/linker.c
         hw6/symbol.h

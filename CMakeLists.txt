@@ -26,3 +26,6 @@ add_executable(hw6-linker
         hw6/instruction.h
         hw6/content.h
 )
+
+# Homework 7
+add_executable(hw7-info hw7/info.c)
